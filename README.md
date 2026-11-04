@@ -6,6 +6,10 @@ A single-file, offline-capable spreadsheet app — dark, high-contrast, virtuali
 
 **Data:** saves automatically to the browser's `localStorage` (`n8sheetz_state`). Use **File → Save As (.json)** for a portable workbook backup; **File → Open (CSV)** and **Import Workbook (.json)** bring data back in.
 
+## v2.4 (Nov 4, 2026)
+
+- 📚 **Template library rebuilt: 75 → 40.** Cut 35 primitive/duplicate presets (dup budgets, novelty trackers, thin calculators). Every survivor was rewritten as a real working table: 5–10 rows of realistic sample data (Arc Beverage inventory SKUs, a Clark Family Projects invoice, homeschool grades/lessons, mileage at the IRS rate), working formulas throughout (totals, averages, letter grades via IF, amortization balances, pipeline sums), status dots 🟢🟡🔴, ✅ trackers, and progress-bar cells. Average template depth went from 2.7 rows to 7+. Start screen now reads 'Search 40 templates…' and previews reflect the new data.
+
 ## v2.3 (Nov 4, 2026)
 
 - 💎 **New logo + 40 UI/effects/buttons/menus upgrades.** Logo: emerald gem with spreadsheet-grid facets and a bold 8, gold trim on a deep-space navy tile (same family as the 1poly mark) — top bar, start-screen hero, and favicon. Plus: animated menus, toast progress bars, modal blur/pop, template-card shine, crosshair row/column bands, sheet-tab context menu (rename / duplicate / delete / tab colors, double-click rename), Insert Date/Time/Checkbox (click to toggle ☑)/Symbols, Text to Columns, Shuffle Rows, Banded Rows, Clear Formatting, Go to Last Cell, Gridlines + Crosshair toggles, Cell Inspector, Shortcuts sheet, status-bar zoom cycler + saved-time indicator, ⌂ A1 return floater, and document title that follows the active sheet. Old duplicate save indicator retired.
