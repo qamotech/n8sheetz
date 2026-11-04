@@ -6,6 +6,10 @@ A single-file, offline-capable spreadsheet app — dark, high-contrast, virtuali
 
 **Data:** saves automatically to the browser's `localStorage` (`n8sheetz_state`). Use **File → Save As (.json)** for a portable workbook backup; **File → Open (CSV)** and **Import Workbook (.json)** bring data back in.
 
+## v2.2.1 (Nov 3, 2026)
+
+- 🎯 **Highlight fix.** Drag hit-testing now measures real cell positions (the old math assumed stock column widths, so at zoom levels or custom column widths the highlight landed on different cells than your finger). Selection is now unmistakable: brighter range tint, a solid **perimeter outline** around the range, **row + column headers light up** for the selected span, and the current cell is the brightest one in the range.
+
 ## v2.2 (Nov 3, 2026)
 
 - ⚡ **Selection smoothness pass — 24 improvements.** The big one: grid `scroll-behavior: smooth` and an 82ms-per-render selection painter made every drag animate behind the pointer. Selection now paints in ~2ms (flat cost, visible-cells-only sweep), moves are rAF-coalesced with geometry hit-testing and pointer capture, edge auto-scroll runs on its own rAF loop (hold at the edge and the selection keeps extending), stats are computed from stored data and throttled, and native scroll/selection ghosts are suppressed. New: Tools → ⚡ Selection Perf Check.

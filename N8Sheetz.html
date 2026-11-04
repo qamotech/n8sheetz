@@ -20019,8 +20019,15 @@ td.n8x-ctrl-prev{background:rgba(56,189,248,.35)!important;box-shadow:inset 0 0 
 #sheetBody td{transition:none!important}
 body.n8x-interacting, body.n8x-interacting #gridContainer{cursor:cell!important}
 body.n8x-interacting #sheetBody td{pointer-events:none}
-#sheetBody td.selected-range{background:var(--selection)!important}
-#sheetBody td.selected-active{box-shadow:inset 0 0 0 2px var(--selection-border,#38bdf8)!important}
+/* --- v2.2.1 unmistakable highlight system --- */
+#sheetBody td.selected-range{background:var(--selection)!important;background:color-mix(in srgb,var(--selection-border) 34%,transparent)!important}
+#sheetBody td.sel-e-t{border-top:2px solid var(--selection-border)!important}
+#sheetBody td.sel-e-b{border-bottom:2px solid var(--selection-border)!important}
+#sheetBody td.sel-e-l{border-left:2px solid var(--selection-border)!important}
+#sheetBody td.sel-e-r{border-right:2px solid var(--selection-border)!important}
+#sheetBody td.selected-active{background:color-mix(in srgb,var(--selection-border) 52%,transparent)!important;border:2px solid var(--selection-border)!important}
+#sheetBody th.row-header.row-active{background:var(--selection-border)!important;color:#0b1220!important;font-weight:800}
+#sheetHead th.col-active{background:var(--selection-border)!important;color:#0b1220!important;font-weight:800}
 
 </style>
 <script id="n8x_tpl">
@@ -20914,8 +20921,14 @@ window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Inc
       for (var i = 0; i < tds.length; i++) {
         var td = tds[i], c = +td.dataset.c, r = +td.dataset.r;
         var sel = inAnyRange(c, r, ranges);
+        var isAct = sel && c === act.c && r === act.r;
         td.classList.toggle("selected-range", sel);
-        td.classList.toggle("selected-active", sel && c === act.c && r === act.r);
+        td.classList.toggle("selected-active", isAct);
+        // perimeter outline: edge classes where the neighbor is NOT selected
+        td.classList.toggle("sel-e-t", sel && !inAnyRange(c, r - 1, ranges));
+        td.classList.toggle("sel-e-b", sel && !inAnyRange(c, r + 1, ranges));
+        td.classList.toggle("sel-e-l", sel && !inAnyRange(c - 1, r, ranges));
+        td.classList.toggle("sel-e-r", sel && !inAnyRange(c + 1, r, ranges));
         if (preview) td.classList.toggle("n8x-ctrl-prev", c >= preview.c1 && c <= preview.c2 && r >= preview.r1 && r <= preview.r2);
         // merged format extras (single sweep — no second DOM pass)
         var cell = S.getCell(c, r), f = cell.fmt || {};
@@ -20994,53 +21007,48 @@ window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Inc
     if (!statsTimer) statsTimer = setTimeout(function () { statsTimer = null; computeStats(rangesNow()); }, 170);
   }
 
-  /* ---------- geometry hit-testing (no per-move DOM hit tests) ---------- */
+  /* ---------- geometry hit-testing (measured from real cell rects, zoom-proof) ---------- */
   var geo = null;
-  function buildGeo() {
+  function buildGeo(startTd) {
     var cont = document.getElementById("gridContainer");
-    var anyTd = document.querySelector("#sheetBody td");
-    if (!cont || !anyTd) return null;
+    if (!cont || !startTd) return null;
     var sheet = S.activeSheet;
     var customRows = S.rowHeights[sheet] && Object.keys(S.rowHeights[sheet]).length > 0;
     var hiddenR = S.hiddenRows[sheet] && S.hiddenRows[sheet].size > 0;
     var hiddenC = S.hiddenCols[sheet] && S.hiddenCols[sheet].size > 0;
     if (customRows || hiddenR || hiddenC) return null; // fall back to elementFromPoint
     var crect = cont.getBoundingClientRect();
-    var trect = anyTd.getBoundingClientRect();
-    var c0 = +anyTd.dataset.c, r0 = +anyTd.dataset.r;
-    // measured row pitch (the real rendered pitch is ~21px, not the 24px virtual unit)
-    var rowPx = 24 * (S.zoom || 1);
+    var srect = startTd.getBoundingClientRect();
+    var sc = +startTd.dataset.c, sr = +startTd.dataset.r;
     var all = document.querySelectorAll("#sheetBody td");
-    var best = null;
-    for (var q = 1; q < all.length; q++) {
-      if (+all[q].dataset.c === c0 && +all[q].dataset.r !== r0) {
-        var dR = +all[q].dataset.r - r0;
+    // columns: measure every rendered column's real left + width from the start row
+    var colLeft = {}, colW = {}, first = null, last = null;
+    var rFirst = null;
+    for (var i = 0; i < all.length; i++) { if (rFirst === null) rFirst = +all[i].dataset.r; if (+all[i].dataset.r === rFirst) { var cc = +all[i].dataset.c, rc = all[i].getBoundingClientRect(); colLeft[cc] = rc.left - crect.left + cont.scrollLeft; colW[cc] = rc.width; if (first === null || cc < first) first = cc; if (last === null || cc > last) last = cc; } }
+    if (first !== 1 || last !== COLS) return null; // partial render: fall back
+    // rows: pitch measured between the start cell and the farthest cell in its column
+    var rowPx = 24 * (S.zoom || 1), best = null;
+    for (var q = 0; q < all.length; q++) {
+      if (+all[q].dataset.c === sc && +all[q].dataset.r !== sr) {
+        var dR = +all[q].dataset.r - sr;
         if (!best || Math.abs(dR) > Math.abs(best.dR)) best = { dR: dR, el: all[q] };
       }
     }
-    if (best) {
-      var dY2 = best.el.getBoundingClientRect().top - trect.top;
-      if (best.dR && dY2) rowPx = Math.abs(dY2 / best.dR);
-    }
-    var widths = S.colWidths[sheet] || {};
-    var defW = anyTd.offsetWidth || 100;
-    var lefts = [0], acc = 0;
-    for (var c = 1; c <= COLS; c++) { acc += widths[c] || defW; lefts.push(acc); }
+    if (best) { var dY = best.el.getBoundingClientRect().top - srect.top; if (best.dR && dY) rowPx = Math.abs(dY / best.dR); }
     return {
-      cont: cont, crect: crect,
-      originX: (trect.left - crect.left + cont.scrollLeft) - lefts[c0 - 1],
-      originY: (trect.top - crect.top + cont.scrollTop) - (r0 - 1) * rowPx,
-      lefts: lefts, rowPx: rowPx,
+      cont: cont, crect: crect, colLeft: colLeft, colW: colW,
+      originY: (srect.top - crect.top + cont.scrollTop) - (sr - 1) * rowPx,
+      rowPx: rowPx,
     };
   }
   function cellFromXY(x, y) {
     var cont = document.getElementById("gridContainer");
     if (geo) {
-      var cx = x - geo.crect.left + cont.scrollLeft - geo.originX;
+      var cx = x - geo.crect.left + cont.scrollLeft;
       var cy = y - geo.crect.top + cont.scrollTop - geo.originY;
       var c = COLS;
-      for (var i = 1; i <= COLS; i++) { if (cx < geo.lefts[i]) { c = i; break; } }
-      if (cx < 0) c = 1;
+      for (var i = 1; i <= COLS; i++) { if (cx < geo.colLeft[i] + geo.colW[i]) { c = i; break; } }
+      if (cx < geo.colLeft[1]) c = 1;
       var r = Math.floor(cy / geo.rowPx) + 1;
       return { c: Math.max(1, Math.min(COLS, c)), r: Math.max(1, Math.min(ROWS, r)) };
     }
@@ -21124,7 +21132,7 @@ window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Inc
     if (e.pointerType === "touch") window.N8X._lastTouch = { t: Date.now(), c: c, r: r };
     cont.focus();
     try { cont.setPointerCapture(e.pointerId); } catch (err) {}
-    geo = buildGeo();
+    geo = buildGeo(td);
     interacting = true;
     document.body.classList.add("n8x-interacting");
     if (e.pointerType === "touch" && window.N8X.rangeMode) {
@@ -21174,7 +21182,8 @@ window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Inc
     cont.addEventListener("dragstart", function (e) { e.preventDefault(); }, true);
     window.N8X.perf = function () { return { renders: perf.renders, avgRenderMs: perf.renders ? +(perf.totalMs / perf.renders).toFixed(2) : 0, lastRenderMs: +perf.lastMs.toFixed(2), drags: perf.drags }; };
     window.N8X._fastRender = fastRender;
-    window.N8X.version = "2.2.0";
+    window.N8X.version = "2.2.1";
+    window.N8X._cellFromXY = function (x, y) { geo = geo || buildGeo(document.querySelector("#sheetBody td")); return cellFromXY(x, y); };
     // Tools menu: perf check
     var dd = document.getElementById("toolsMenu");
     if (dd && !dd.querySelector('[data-n8x-cmd="N8X_Perf"]')) {
