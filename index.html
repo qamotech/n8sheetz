@@ -20028,6 +20028,67 @@ body.n8x-interacting #sheetBody td{pointer-events:none}
 #sheetBody td.selected-active{background:color-mix(in srgb,var(--selection-border) 52%,transparent)!important;border:2px solid var(--selection-border)!important}
 #sheetBody th.row-header.row-active{background:var(--selection-border)!important;color:#0b1220!important;font-weight:800}
 #sheetHead th.col-active{background:var(--selection-border)!important;color:#0b1220!important;font-weight:800}
+/* --- v2.3 brand / polish / effects --- */
+.n8x-logo svg{filter:drop-shadow(0 2px 6px rgba(52,211,153,.35));border-radius:6px}
+.brand{font-weight:800;letter-spacing:.2px}
+.n8x-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:26px 16px 8px}
+.n8x-hero-logo svg{filter:drop-shadow(0 6px 22px rgba(52,211,153,.45));border-radius:16px}
+.n8x-hero-title{font-size:34px;font-weight:900;letter-spacing:.3px;background:linear-gradient(92deg,#7dd3fc,#34d399 55%,#f5c451);-webkit-background-clip:text;background-clip:text;color:transparent}
+.n8x-hero-title span{color:inherit}
+.n8x-hero-tag{font-size:13px;opacity:.75;max-width:520px}
+.dropdown{animation:n8xDrop .16s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes n8xDrop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.dropdown-btn{transition:background .12s,transform .12s;border-radius:8px}
+.dropdown-btn:hover{transform:translateX(2px)}
+.tool-btn{transition:transform .12s,box-shadow .12s,background .12s}
+.tool-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.tool-btn:active{transform:scale(.94)}
+button:focus-visible,.tool-btn:focus-visible,.dropdown-btn:focus-visible{outline:2px solid var(--accent,#38bdf8);outline-offset:1px}
+.toast{border-left:3px solid var(--accent,#38bdf8);position:relative;overflow:hidden;animation:n8xToastIn .25s cubic-bezier(.2,.9,.3,1.15) both}
+@keyframes n8xToastIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+.toast::after{content:"";position:absolute;left:0;bottom:0;height:2px;background:var(--accent,#38bdf8);animation:n8xToastBar 3.2s linear both}
+@keyframes n8xToastBar{from{width:100%}to{width:0}}
+.modal-overlay{backdrop-filter:blur(3px)}
+.modal{animation:n8xPop .18s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes n8xPop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+.n8x-modal-body{padding:14px 16px;max-height:60vh;overflow:auto}
+.n8x-insp{width:100%;border-collapse:collapse;font-size:13px}
+.n8x-insp td{padding:6px 8px;border-bottom:1px solid rgba(148,163,184,.18);text-align:left}
+.n8x-insp td:first-child{opacity:.75;white-space:nowrap;width:90px}
+.n8x-insp kbd{background:#1e293b;border:1px solid #475569;border-bottom-width:2px;border-radius:6px;padding:1px 7px;font-family:inherit;font-size:12px;color:#e2e8f0}
+.ss-card{transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden}
+.ss-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.45)}
+.ss-card::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.13) 48%,transparent 60%);transform:translateX(-110%);transition:transform .5s;pointer-events:none;z-index:2}
+.ss-card:hover::before{transform:translateX(110%)}
+#gridContainer::-webkit-scrollbar,.dropdown::-webkit-scrollbar,.n8x-modal-body::-webkit-scrollbar{width:9px;height:9px}
+#gridContainer::-webkit-scrollbar-thumb,.dropdown::-webkit-scrollbar-thumb,.n8x-modal-body::-webkit-scrollbar-thumb{background:#334155;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+#gridContainer::-webkit-scrollbar-track{background:transparent}
+#sheetBody.n8x-fade{animation:n8xFade .18s ease both}
+@keyframes n8xFade{from{opacity:.35}to{opacity:1}}
+#sheetBody td.band-r{background-image:linear-gradient(rgba(56,189,248,.055),rgba(56,189,248,.055))}
+#sheetBody td.band-c{background-image:linear-gradient(rgba(56,189,248,.075),rgba(56,189,248,.075))}
+body.n8x-nogrid #sheetBody td{border-color:transparent!important}
+.tabs .tab{transition:background .15s,transform .15s;border-radius:9px 9px 0 0}
+.tabs .tab.active{box-shadow:inset 0 -3px 0 var(--accent,#38bdf8);font-weight:700}
+.tabs .add-tab{transition:transform .15s}
+.tabs .add-tab:hover{transform:scale(1.18)}
+.n8x-ctx{position:fixed;z-index:4000;background:#0f172a;border:1px solid #334155;border-radius:12px;padding:6px;min-width:172px;box-shadow:0 16px 40px rgba(0,0,0,.55);animation:n8xPop .15s ease both}
+.n8x-ctx button{display:flex;width:100%;gap:8px;align-items:center;background:none;border:none;color:#e2e8f0;padding:8px 10px;border-radius:8px;font-size:13px;cursor:pointer;text-align:left}
+.n8x-ctx button:hover{background:#1e293b}
+.n8x-ctx-sep{height:1px;background:#334155;margin:5px 4px}
+.n8x-ctx-label{font-size:11px;opacity:.65;padding:2px 10px}
+.n8x-ctx-colors{display:flex;gap:6px;padding:4px 10px 8px}
+.n8x-ctx-colors button{width:24px;height:24px;border-radius:50%;border:2px solid #475569;padding:0;display:block;color:#e2e8f0;font-size:11px}
+.n8x-a1{position:absolute;right:14px;bottom:52px;z-index:60;background:#0ea5e9;color:#fff;border:none;border-radius:999px;padding:9px 14px;font-weight:700;font-size:13px;box-shadow:0 8px 22px rgba(2,132,199,.45);opacity:0;pointer-events:none;transform:translateY(8px);transition:all .2s;cursor:pointer}
+.n8x-a1.show{opacity:1;pointer-events:auto;transform:none}
+#n8xSaved.pulse{color:#fbbf24}
+.n8x-zoom{cursor:pointer;background:none;border:none;color:inherit;font:inherit}
+#n8xBar .n8x-grp{border-left:1px solid rgba(148,163,184,.16);padding-left:8px}
+#n8xBar .n8x-grp:first-child{border-left:none;padding-left:0}
+body.n8x-range-on #n8xBar [data-n8x-act="range"]{background:#b45309!important;color:#fff;box-shadow:0 0 0 2px #f59e0b,0 0 14px rgba(245,158,11,.6)}
+.top-bar{animation:n8xBoot .3s ease both}
+@keyframes n8xBoot{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+#saveIndicator{display:none!important}
 
 </style>
 <script id="n8x_tpl">
@@ -21207,6 +21268,398 @@ window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Inc
   }
   var tries = 0;
   var timer = setInterval(function () { tries++; if (install() || tries > 90) clearInterval(timer); }, 250);
+})();
+
+</script>
+<script id="n8x_js3">
+/* ===== N8Sheetz v2.3 — UI / effects / buttons / menus pass (40 upgrades) =====
+   Patch layer 3: branding, polish, sheet-tab power features, new commands.
+   Store format untouched; UI-only prefs live in localStorage 'n8sheetz_ui'. */
+(function () {
+  "use strict";
+  var S = null, C = null;
+  var ui = {};
+  try { ui = JSON.parse(localStorage.getItem("n8sheetz_ui") || "{}"); } catch (e) { ui = {}; }
+  ui.tabColors = ui.tabColors || {};
+  if (ui.crosshair == null) ui.crosshair = true;
+  function saveUI() { try { localStorage.setItem("n8sheetz_ui", JSON.stringify(ui)); } catch (e) {} }
+  function $(id) { return document.getElementById(id); }
+  function toast(m, t) { if (typeof window.toast === "function") window.toast(m, t || "info", 3400); }
+  function colName(n) { var s = ""; while (n > 0) { var m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+
+  /* ---------- 1-3. Logo: gem-grid mark (navy tile, gold-trim emerald gem, bold 8) ---------- */
+  function logoSVG(size) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="' + size + '" height="' + size + '" role="img" aria-label="N8Sheetz logo">' +
+      '<defs><linearGradient id="n8bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10203c"/><stop offset="1" stop-color="#060b16"/></linearGradient>' +
+      '<linearGradient id="n8gem" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6ee7b7"/><stop offset=".55" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/></linearGradient></defs>' +
+      '<rect width="64" height="64" rx="14" fill="url(#n8bg)"/>' +
+      '<path d="M16 2V62M32 2V62M48 2V62M2 16H62M2 32H62M2 48H62" stroke="#7dd3fc" stroke-opacity=".10" stroke-width="1"/>' +
+      '<path d="M32 7 L52 24 L32 57 L12 24 Z" fill="url(#n8gem)" stroke="#f5c451" stroke-width="2.5" stroke-linejoin="round"/>' +
+      '<path d="M12 24H52M24 24L32 57L40 24M24 24L32 7L40 24" fill="none" stroke="#064e3b" stroke-opacity=".5" stroke-width="1.6"/>' +
+      '<text x="32" y="38" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="19" font-weight="900" fill="#052e1f">8</text></svg>';
+  }
+  function applyLogo() {
+    document.querySelectorAll(".brand svg").forEach(function (old) {
+      var inStart = !!old.closest("#startScreen");
+      var d = document.createElement("span");
+      d.innerHTML = logoSVG(inStart ? 34 : 24);
+      d.className = "n8x-logo";
+      old.replaceWith(d.firstChild);
+    });
+    var link = document.querySelector('link[rel="icon"]') || document.createElement("link");
+    link.rel = "icon";
+    link.href = "data:image/svg+xml," + encodeURIComponent(logoSVG(64));
+    if (!link.parentNode) document.head.appendChild(link);
+    // start-screen hero
+    var ss = $("startScreen");
+    if (ss && !ss.querySelector(".n8x-hero")) {
+      var grid = ss.querySelector(".ss-gallery") || ss.querySelector(".ss-content");
+      var hero = document.createElement("div");
+      hero.className = "n8x-hero";
+      hero.innerHTML = '<div class="n8x-hero-logo">' + logoSVG(76) + '</div>' +
+        '<div class="n8x-hero-title">N<span>8</span>Sheetz</div>' +
+        '<div class="n8x-hero-tag">Your sheets, supercharged — 75 templates, full offline, autosaves on this device.</div>';
+      if (grid && grid.parentNode) grid.parentNode.insertBefore(hero, grid);
+    }
+  }
+
+  /* ---------- modal helper (used by Shortcuts + Inspector) ---------- */
+  function showModal(title, bodyHTML) {
+    var old = $("n8xModalOverlay"); if (old) old.remove();
+    var ov = document.createElement("div");
+    ov.id = "n8xModalOverlay"; ov.className = "modal-overlay";
+    ov.innerHTML = '<div class="modal n8x-modal"><div class="modal-header"><span class="modal-title">' + title + '</span>' +
+      '<button class="modal-close" aria-label="Close">✕</button></div><div class="n8x-modal-body">' + bodyHTML + "</div></div>";
+    document.body.appendChild(ov);
+    ov.addEventListener("pointerdown", function (e) { if (e.target === ov) ov.remove(); });
+    ov.querySelector(".modal-close").addEventListener("click", function () { ov.remove(); });
+  }
+
+  /* ---------- menu helpers ---------- */
+  function addMenuItem(menuId, label, fn, groupLabel) {
+    var dd = $(menuId); if (!dd || dd.querySelector('[data-n8x3="' + label + '"]')) return;
+    if (groupLabel && !dd.querySelector('[data-n8x3-group="' + groupLabel + '"]')) {
+      var h = document.createElement("div");
+      h.className = "menu-section"; h.setAttribute("data-n8x3-group", groupLabel); h.textContent = groupLabel;
+      dd.appendChild(h);
+    }
+    var b = document.createElement("button");
+    b.className = "dropdown-btn"; b.setAttribute("data-n8x3", label);
+    b.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px">' + label + "</div>";
+    b._n8xLabel = label;
+    b.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      document.querySelectorAll(".menu-item").forEach(function (m) { m.classList.remove("active"); });
+      fn();
+    });
+    dd.appendChild(b);
+    return b;
+  }
+  function setBtnLabel(btn, label) { if (btn) { btn._n8xLabel = label; var d = btn.querySelector("div"); if (d) d.textContent = label; } }
+  function mainRange() {
+    var a = S.selStart, b = S.selEnd;
+    return { c1: Math.min(a.c, b.c), r1: Math.min(a.r, b.r), c2: Math.max(a.c, b.c), r2: Math.max(a.r, b.r) };
+  }
+  function allRanges() { return [mainRange()].concat((window.N8X && window.N8X.multi) || []); }
+  function pushChanges(changes) {
+    if (!changes.length) return false;
+    var E = window._n8engine;
+    var full = changes.map(function (t) { return { key: S.getKey(t.c, t.r), sheet: S.activeSheet, c: t.c, r: t.r, oldRaw: t.oldRaw, newRaw: t.newRaw, oldFmt: t.oldFmt, newFmt: t.newFmt }; });
+    var cmd = { changes: full, ts: Date.now(),
+      undo: function (st, e) { var ks = []; full.forEach(function (t) { st.setCell(t.c, t.r, t.oldRaw, t.sheet); st.getCell(t.c, t.r, t.sheet).fmt = t.oldFmt; ks.push(t.key); }); e.recalcCascade(ks); },
+      redo: function (st, e) { var ks = []; full.forEach(function (t) { st.setCell(t.c, t.r, t.newRaw, t.sheet); st.getCell(t.c, t.r, t.sheet).fmt = t.newFmt; ks.push(t.key); }); e.recalcCascade(ks); } };
+    cmd.redo(S, E); S.history.push(cmd); C.refreshGrid(); C.scheduleSave();
+    return true;
+  }
+  function setCellVal(c, r, raw) {
+    var cell = S.getCell(c, r);
+    pushChanges([{ c: c, r: r, oldRaw: cell.raw, newRaw: raw, oldFmt: cell.fmt, newFmt: cell.fmt }]);
+  }
+
+  /* ---------- commands ---------- */
+  function cmdDate() { var d = new Date(); var p = function (n) { return String(n).padStart(2, "0"); }; setCellVal(S.activeCell.c, S.activeCell.r, d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate())); }
+  function cmdTime() { var d = new Date(); var p = function (n) { return String(n).padStart(2, "0"); }; setCellVal(S.activeCell.c, S.activeCell.r, p(d.getHours()) + ":" + p(d.getMinutes())); }
+  function cmdSymbol(sym) { var a = S.activeCell; var cell = S.getCell(a.c, a.r); setCellVal(a.c, a.r, (cell.raw || "") + sym); }
+  function cmdTextToColumns() {
+    var rg = mainRange();
+    var delim = window.prompt("Split the first selected column by this delimiter:", ",");
+    if (delim === null || delim === "") return;
+    var changes = [];
+    for (var r = rg.r1; r <= rg.r2; r++) {
+      var v = S.getCell(rg.c1, r).raw || "";
+      if (!v) continue;
+      var parts = String(v).split(delim);
+      for (var i = 0; i < parts.length && rg.c1 + i <= 26; i++) {
+        var cell = S.getCell(rg.c1 + i, r);
+        var nv = parts[i].trim();
+        if (cell.raw !== nv) changes.push({ c: rg.c1 + i, r: r, oldRaw: cell.raw, newRaw: nv, oldFmt: cell.fmt, newFmt: cell.fmt });
+      }
+    }
+    if (changes.length) { pushChanges(changes); toast("Split into columns — " + changes.length + " cell(s) written.", "ok"); }
+    else toast("Nothing to split in that column.", "info");
+  }
+  function cmdShuffle() {
+    var rg = mainRange();
+    if (rg.r2 - rg.r1 < 1) { toast("Select at least 2 rows to shuffle.", "info"); return; }
+    var rows = [];
+    for (var r = rg.r1; r <= rg.r2; r++) { var row = []; for (var c = rg.c1; c <= rg.c2; c++) { var cell = S.getCell(c, r); row.push({ raw: cell.raw, fmt: cell.fmt }); } rows.push(row); }
+    for (var i = rows.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = rows[i]; rows[i] = rows[j]; rows[j] = t; }
+    var changes = [];
+    rows.forEach(function (row, ri) { row.forEach(function (v, ci) { var cell = S.getCell(rg.c1 + ci, rg.r1 + ri); if (cell.raw !== v.raw) changes.push({ c: rg.c1 + ci, r: rg.r1 + ri, oldRaw: cell.raw, newRaw: v.raw, oldFmt: cell.fmt, newFmt: v.fmt }); }); });
+    if (changes.length) { pushChanges(changes); toast("Rows shuffled.", "ok"); }
+  }
+  var BAND = "rgba(56,189,248,0.10)";
+  function cmdBanded(on) {
+    var changes = [];
+    allRanges().forEach(function (rg) {
+      for (var r = rg.r1; r <= rg.r2; r++) for (var c = rg.c1; c <= rg.c2; c++) {
+        var cell = S.getCell(c, r); var f = Object.assign({}, cell.fmt || {});
+        if (on) { if ((r - rg.r1) % 2 === 1) f.bgColor = BAND; else if (f.bgColor === BAND) delete f.bgColor; }
+        else if (f.bgColor === BAND) delete f.bgColor;
+        changes.push({ c: c, r: r, oldRaw: cell.raw, newRaw: cell.raw, oldFmt: cell.fmt, newFmt: f });
+      }
+    });
+    if (changes.length) { pushChanges(changes); toast(on ? "Banded rows applied." : "Banding removed.", "ok"); }
+  }
+  function cmdClearFormats() {
+    var changes = [];
+    allRanges().forEach(function (rg) {
+      for (var r = rg.r1; r <= rg.r2; r++) for (var c = rg.c1; c <= rg.c2; c++) {
+        var cell = S.getCell(c, r);
+        if (cell.fmt && Object.keys(cell.fmt).length) changes.push({ c: c, r: r, oldRaw: cell.raw, newRaw: cell.raw, oldFmt: cell.fmt, newFmt: {} });
+      }
+    });
+    if (changes.length) { pushChanges(changes); toast("Formatting cleared in selection.", "ok"); } else toast("No formatting to clear.", "info");
+  }
+  function cmdLastCell() {
+    var maxC = 1, maxR = 1, prefix = S.activeSheet + ":";
+    Object.keys(S.data).forEach(function (k) {
+      if (k.indexOf(prefix) !== 0) return;
+      var m = k.slice(prefix.length).match(/^([A-Z]+)([0-9]+)$/); if (!m) return;
+      var c = 0; for (var i = 0; i < m[1].length; i++) c = c * 26 + (m[1].charCodeAt(i) - 64);
+      if (c > maxC) maxC = c; var r = +m[2]; if (r > maxR) maxR = r;
+    });
+    window.N8X.select(colName(maxC) + maxR);
+    var cont = $("gridContainer"); if (cont) cont.scrollTop = Math.max(0, (maxR - 8) * 21);
+    toast("Last used cell: " + colName(maxC) + maxR, "info");
+  }
+  function cmdInspector() {
+    var a = S.activeCell, cell = S.getCell(a.c, a.r), f = cell.fmt || {};
+    var type = cell.raw === "" || cell.raw == null ? "Empty" : (("" + cell.raw).charAt(0) === "=" ? "Formula" : (isNaN(parseFloat(cell.val)) || cell.val === "" ? "Text" : "Number"));
+    var fmtBits = Object.keys(f).filter(function (k) { return f[k] !== undefined && f[k] !== false && f[k] !== null && f[k] !== ""; }).map(function (k) { return k + ": " + f[k]; });
+    showModal("🔍 Cell Inspector",
+      '<table class="n8x-insp"><tr><td>Address</td><td><b>' + colName(a.c) + a.r + '</b> · ' + S.activeSheet + '</td></tr>' +
+      '<tr><td>Type</td><td>' + type + '</td></tr>' +
+      '<tr><td>Raw</td><td>' + (cell.raw === "" ? "<i>empty</i>" : String(cell.raw).replace(/</g, "&lt;")) + '</td></tr>' +
+      '<tr><td>Value</td><td>' + (cell.val === "" || cell.val == null ? "<i>empty</i>" : String(cell.val).replace(/</g, "&lt;")) + '</td></tr>' +
+      '<tr><td>Format</td><td>' + (fmtBits.length ? fmtBits.join(" · ") : "Default") + "</td></tr></table>");
+  }
+  function cmdShortcuts() {
+    var rows = [["← → ↑ ↓", "Move one cell"], ["Shift + arrows", "Extend selection"], ["Ctrl/Cmd + click / drag", "Add a separate range"], ["Ctrl + A", "Select data, then whole sheet"], ["Ctrl + Z / Y", "Undo / Redo"], ["Ctrl + F", "Find & Replace"], ["Ctrl + K", "Command palette"], ["Enter / Tab", "Confirm & move down / right"], ["Esc", "Cancel edit / close menu"], ["Double-click cell", "Edit cell"], ["Drag fill handle ■", "Auto-fill series"], ["⇧ Range (touch)", "Tap anchor, tap corner"]];
+    showModal("⌨️ Keyboard Shortcuts", '<table class="n8x-insp">' + rows.map(function (r) { return "<tr><td><kbd>" + r[0] + "</kbd></td><td>" + r[1] + "</td></tr>"; }).join("") + "</table>");
+  }
+
+  /* ---------- sheet tabs: colors, context menu, dblclick rename ---------- */
+  function applyTabColors() {
+    document.querySelectorAll(".tabs .tab").forEach(function (tab) {
+      var name = tab.textContent.trim();
+      var color = ui.tabColors[name];
+      if (color) { tab.style.background = color; tab.style.color = "#0b1220"; tab.style.fontWeight = "700"; }
+      else if (tab.dataset.n8xColored) { tab.style.background = ""; tab.style.color = ""; tab.style.fontWeight = ""; delete tab.dataset.n8xColored; }
+      if (color) tab.dataset.n8xColored = "1";
+    });
+  }
+  function closeCtx() { var m = $("n8xCtx"); if (m) m.remove(); }
+  function openTabCtx(tab, x, y) {
+    closeCtx();
+    var name = tab.textContent.trim();
+    var m = document.createElement("div");
+    m.id = "n8xCtx"; m.className = "n8x-ctx";
+    var colors = [["Sky", "#7dd3fc"], ["Emerald", "#6ee7b7"], ["Amber", "#fcd34d"], ["Rose", "#fda4af"], ["Violet", "#c4b5fd"], ["None", ""]];
+    m.innerHTML = '<button data-act="rename">✏️ Rename</button><button data-act="dup">⧉ Duplicate</button>' +
+      '<button data-act="del">🗑️ Delete</button><div class="n8x-ctx-sep"></div><div class="n8x-ctx-label">Tab color</div>' +
+      '<div class="n8x-ctx-colors">' + colors.map(function (c) { return '<button data-color="' + c[1] + '" title="' + c[0] + '" style="background:' + (c[1] || "transparent") + '">' + (c[1] ? "" : "✕") + "</button>"; }).join("") + "</div>";
+    document.body.appendChild(m);
+    m.style.left = Math.min(x, window.innerWidth - 190) + "px";
+    m.style.top = Math.min(y, window.innerHeight - 240) + "px";
+    m.addEventListener("click", function (e) {
+      var actBtn = e.target.closest("[data-act]"); var colBtn = e.target.closest("[data-color]");
+      if (colBtn) { var col = colBtn.getAttribute("data-color"); if (col) ui.tabColors[name] = col; else delete ui.tabColors[name]; saveUI(); applyTabColors(); closeCtx(); return; }
+      if (!actBtn) return;
+      var act = actBtn.getAttribute("data-act"); closeCtx();
+      if (act === "rename") renameTab(name);
+      else if (act === "dup") { if (typeof C.dispatchCmd === "function") C.dispatchCmd("Sheet_Duplicate"); }
+      else if (act === "del") {
+        if (Object.keys(S.sheets).length <= 1) { toast("Can't delete the only sheet.", "err"); return; }
+        if (window.confirm("Delete sheet '" + name + "'? This can't be undone from the tab bar (Undo may restore data).")) { if (typeof C.dispatchCmd === "function") C.dispatchCmd("Sheet_Delete"); }
+      }
+    });
+    setTimeout(function () { document.addEventListener("pointerdown", function h(e) { if (!m.contains(e.target)) { closeCtx(); document.removeEventListener("pointerdown", h); } }); }, 10);
+  }
+  function renameTab(name) {
+    var next = window.prompt("Rename sheet:", name);
+    if (!next || !next.trim() || next.trim() === name) return;
+    next = next.trim();
+    if (S.sheets[next]) { toast("A sheet named '" + next + "' already exists.", "err"); return; }
+    if (ui.tabColors[name]) { ui.tabColors[next] = ui.tabColors[name]; delete ui.tabColors[name]; saveUI(); }
+    S.renameSheet(name, next);
+    if (typeof C.buildTabs === "function") C.buildTabs();
+    C.scheduleSave(); applyTabColors();
+    toast("Sheet renamed to " + next + ".", "ok");
+  }
+  function wireTabs() {
+    var tabsEl = document.querySelector(".tabs");
+    if (!tabsEl || tabsEl.dataset.n8x3) return;
+    tabsEl.dataset.n8x3 = "1";
+    tabsEl.addEventListener("contextmenu", function (e) {
+      var tab = e.target.closest(".tab"); if (!tab) return;
+      e.preventDefault(); openTabCtx(tab, e.clientX, e.clientY);
+    });
+    tabsEl.addEventListener("dblclick", function (e) {
+      var tab = e.target.closest(".tab"); if (!tab) return;
+      renameTab(tab.textContent.trim());
+    });
+    var holdTimer = null;
+    tabsEl.addEventListener("pointerdown", function (e) {
+      var tab = e.target.closest(".tab"); if (!tab || e.pointerType !== "touch") return;
+      holdTimer = setTimeout(function () { openTabCtx(tab, e.clientX, e.clientY); }, 550);
+    });
+    ["pointerup", "pointercancel", "pointermove"].forEach(function (ev) { tabsEl.addEventListener(ev, function () { if (holdTimer) clearTimeout(holdTimer); }); });
+    new MutationObserver(function () { applyTabColors(); }).observe(tabsEl, { childList: true, subtree: true });
+  }
+
+  /* ---------- status bar extras: zoom, saved indicator, A1 floater ---------- */
+  function wireStatus() {
+    var bar = document.querySelector(".status-area"); if (!bar || $("n8xSaved")) return;
+    var saved = document.createElement("span");
+    saved.className = "stat-item"; saved.id = "n8xSaved"; saved.textContent = "✓ Saved";
+    bar.appendChild(saved);
+    var zoom = document.createElement("button");
+    zoom.className = "stat-item n8x-zoom"; zoom.id = "n8xZoom"; zoom.title = "Tap to change zoom";
+    zoom.textContent = "🔍 " + Math.round((S.zoom || 1) * 100) + "%";
+    zoom.addEventListener("click", function () {
+      var steps = [0.75, 1, 1.25, 1.5];
+      var cur = S.zoom || 1; var idx = steps.findIndex(function (z) { return Math.abs(z - cur) < 0.01; });
+      var next = steps[(idx + 1) % steps.length];
+      S.zoom = next; C.refreshGrid();
+      zoom.textContent = "🔍 " + Math.round(next * 100) + "%";
+    });
+    bar.appendChild(zoom);
+    var origSave = C.scheduleSave.bind(C);
+    C.scheduleSave = function () { origSave(); saved.textContent = "● Saving…"; saved.classList.add("pulse"); setTimeout(function () { var d = new Date(); saved.textContent = "✓ Saved " + d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); saved.classList.remove("pulse"); }, 900); };
+    setInterval(function () { var z = Math.round((S.zoom || 1) * 100); var lbl = "🔍 " + z + "%"; if (zoom.textContent !== lbl) zoom.textContent = lbl; document.title = S.activeSheet + " · N8Sheetz"; }, 1200);
+    // A1 floater
+    var cont = $("gridContainer");
+    var fab = document.createElement("button");
+    fab.id = "n8xA1"; fab.className = "n8x-a1"; fab.textContent = "⌂ A1"; fab.title = "Back to A1";
+    fab.addEventListener("click", function () { cont.scrollTop = 0; cont.scrollLeft = 0; window.N8X.select("A1"); });
+    cont.parentNode.appendChild(fab);
+    var tick = false;
+    cont.addEventListener("scroll", function () {
+      if (tick) return; tick = true;
+      requestAnimationFrame(function () { tick = false; fab.classList.toggle("show", cont.scrollTop > 400 || cont.scrollLeft > 400); });
+    }, { passive: true });
+  }
+
+  /* ---------- crosshair bands (wrap the v2.2 fast render) ---------- */
+  function wireCrosshair() {
+    var fast = C.renderSelection;
+    C.renderSelection = function () {
+      fast();
+      document.querySelectorAll("#sheetBody td.band-r, #sheetBody td.band-c").forEach(function (td) { td.classList.remove("band-r", "band-c"); });
+      if (!ui.crosshair) return;
+      var a = S.activeCell;
+      var row = document.querySelectorAll('#sheetBody td[data-r="' + a.r + '"]');
+      var col = document.querySelectorAll('#sheetBody td[data-c="' + a.c + '"]');
+      row.forEach(function (td) { if (!td.classList.contains("selected-range")) td.classList.add("band-r"); });
+      col.forEach(function (td) { if (!td.classList.contains("selected-range")) td.classList.add("band-c"); });
+    };
+  }
+
+  /* ---------- checkbox cells: click toggles ☐/☑ ---------- */
+  function wireCheckbox() {
+    var tap = null;
+    document.addEventListener("pointerdown", function (e) {
+      tap = { x: e.clientX, y: e.clientY, t: Date.now() };
+    }, true);
+    document.addEventListener("pointerup", function (e) {
+      if (!tap || Date.now() - tap.t > 400) return;
+      if (Math.abs(e.clientX - tap.x) > 6 || Math.abs(e.clientY - tap.y) > 6) return;
+      var cont = $("gridContainer"); if (!cont || !cont.contains(e.target) && e.target !== cont) return;
+      var p = window.N8X._cellFromXY ? window.N8X._cellFromXY(e.clientX, e.clientY) : null;
+      if (!p) return;
+      var cell = S.getCell(p.c, p.r);
+      if (cell.raw !== "☐" && cell.raw !== "☑") return;
+      var rg = mainRange();
+      if (rg.c1 !== rg.c2 || rg.r1 !== rg.r2 || rg.c1 !== p.c || rg.r1 !== p.r) return;
+      setCellVal(p.c, p.r, cell.raw === "☐" ? "☑" : "☐");
+    }, true);
+  }
+
+  /* ---------- sheet-switch fade ---------- */
+  function wireFade() {
+    var tabsEl = document.querySelector(".tabs"); if (!tabsEl) return;
+    tabsEl.addEventListener("click", function () {
+      var tb = $("sheetBody"); if (!tb) return;
+      tb.classList.remove("n8x-fade"); void tb.offsetWidth; tb.classList.add("n8x-fade");
+    }, true);
+  }
+
+  /* ---------- top menu icons ---------- */
+  function menuIcons() {
+    var icons = { File: "📁", Edit: "✏️", View: "👁️", Insert: "➕", Format: "🎨", Data: "📊", Tools: "🧰", Help: "❓" };
+    document.querySelectorAll(".menu-item").forEach(function (mi) {
+      if (mi.dataset.n8xIcon) return;
+      for (var i = 0; i < mi.childNodes.length; i++) {
+        var node = mi.childNodes[i];
+        if (node.nodeType === 3 && node.nodeValue.trim()) {
+          var name = node.nodeValue.trim();
+          if (icons[name]) { node.nodeValue = " " + icons[name] + " " + name + " "; mi.dataset.n8xIcon = "1"; }
+          break;
+        }
+      }
+    });
+  }
+
+  /* ---------- install ---------- */
+  function install() {
+    S = window._n8store; C = window._n8ctrl;
+    if (!S || !C || !window.N8X || !window.N8X.ready || !window.N8X._fastRender) return false;
+    applyLogo(); menuIcons(); wireTabs(); applyTabColors(); wireStatus(); wireCrosshair(); wireCheckbox(); wireFade();
+    addMenuItem("insertMenu", "📅 Date (today)", cmdDate, "Insert");
+    addMenuItem("insertMenu", "🕒 Time (now)", cmdTime, "Insert");
+    addMenuItem("insertMenu", "☑ Checkbox", function () { setCellVal(S.activeCell.c, S.activeCell.r, "☐"); toast("Checkbox added — tap it to check/uncheck.", "info"); }, "Insert");
+    addMenuItem("insertMenu", "★ Symbol: Star", function () { cmdSymbol("★"); }, "Insert");
+    addMenuItem("insertMenu", "✓ Symbol: Check", function () { cmdSymbol("✓"); }, "Insert");
+    addMenuItem("insertMenu", "♥ Symbol: Heart", function () { cmdSymbol("♥"); }, "Insert");
+    addMenuItem("dataMenu", "✂️ Text to Columns…", cmdTextToColumns, "Transform");
+    addMenuItem("dataMenu", "🔀 Shuffle Rows", cmdShuffle, "Transform");
+    addMenuItem("formatMenu", "🌊 Banded Rows", function () { cmdBanded(true); }, "Rows");
+    addMenuItem("formatMenu", "🫧 Remove Banding", function () { cmdBanded(false); }, "Rows");
+    addMenuItem("formatMenu", "🧹 Clear Formatting", cmdClearFormats, "Rows");
+    addMenuItem("editMenu", "🎯 Go to Last Cell", cmdLastCell, "Navigate");
+    var glBtn = addMenuItem("viewMenu", ui.gridlines === false ? "\u25a6 Gridlines: Off" : "\u25a6 Gridlines: On", function () {
+      ui.gridlines = ui.gridlines === false ? true : false; saveUI();
+      document.body.classList.toggle("n8x-nogrid", ui.gridlines === false);
+      setBtnLabel(glBtn, ui.gridlines === false ? "▦ Gridlines: Off" : "▦ Gridlines: On");
+      toast("Gridlines " + (ui.gridlines === false ? "hidden." : "shown."), "info");
+    }, "Grid");
+    setBtnLabel(glBtn, ui.gridlines === false ? "▦ Gridlines: Off" : "▦ Gridlines: On");
+    var chBtn = addMenuItem("viewMenu", ui.crosshair ? "\u271b Crosshair: On" : "\u271b Crosshair: Off", function () {
+      ui.crosshair = !ui.crosshair; saveUI(); C.renderSelection();
+      setBtnLabel(chBtn, ui.crosshair ? "✛ Crosshair: On" : "✛ Crosshair: Off");
+      toast("Crosshair " + (ui.crosshair ? "on." : "off."), "info");
+    }, "Grid");
+    setBtnLabel(chBtn, ui.crosshair ? "✛ Crosshair: On" : "✛ Crosshair: Off");
+    addMenuItem("toolsMenu", "🔍 Cell Inspector", cmdInspector, "Inspect");
+    addMenuItem("toolsMenu", "⌨️ Keyboard Shortcuts", cmdShortcuts, "Inspect");
+    if (ui.gridlines === false) document.body.classList.add("n8x-nogrid");
+    window.N8X.version = "2.3.0";
+    window.N8X._v23 = { logoSVG: logoSVG, ui: ui };
+    return true;
+  }
+  var tries = 0;
+  var timer = setInterval(function () { tries++; if (install() || tries > 100) clearInterval(timer); }, 250);
 })();
 
 </script>
