@@ -20014,6 +20014,13 @@ td.n8x-ctrl-prev{background:rgba(56,189,248,.35)!important;box-shadow:inset 0 0 
 .n8x-pv-blank-label{font-size:10px;color:#94a3b8}
 .n8x-card-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
 .ss-card:hover .ss-card-preview.n8x-preview{border-color:var(--accent);box-shadow:0 6px 22px rgba(56,189,248,.18)}
+/* --- v2.2 selection smoothness --- */
+#gridContainer{scroll-behavior:auto!important;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;cursor:cell}
+#sheetBody td{transition:none!important}
+body.n8x-interacting, body.n8x-interacting #gridContainer{cursor:cell!important}
+body.n8x-interacting #sheetBody td{pointer-events:none}
+#sheetBody td.selected-range{background:var(--selection)!important}
+#sheetBody td.selected-active{box-shadow:inset 0 0 0 2px var(--selection-border,#38bdf8)!important}
 
 </style>
 <script id="n8x_tpl">
@@ -20863,6 +20870,334 @@ window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Inc
   }
   var tries = 0;
   var timer = setInterval(function () { tries++; if (init() || tries > 80) clearInterval(timer); }, 250);
+})();
+
+</script>
+<script id="n8x_js2">
+/* ===== N8Sheetz v2.2 — selection smoothness pass (24 improvements) =====
+   Replaces the per-mousemove full renderSelection with:
+   - a visible-cells-only flat render (cost no longer grows with range size)
+   - rAF-coalesced pointer painting with geometry hit-testing
+   - rAF edge auto-scroll, pointer capture, throttled stats
+   The store, save format and all v2 APIs are untouched. */
+(function () {
+  "use strict";
+  var COLS = 26, ROWS = 1000;
+  var S = null, C = null;
+  var perf = { renders: 0, totalMs: 0, lastMs: 0, drags: 0 };
+  var lastStatsAt = 0, statsTimer = null, interacting = false;
+
+  function colName(n) { var s = ""; while (n > 0) { var m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+  function toast(msg, type) { if (typeof window.toast === "function") window.toast(msg, type || "info", 3600); }
+
+  /* ---------- fast render: one sweep over VISIBLE cells only ---------- */
+  var handleEl = null;
+  function inAnyRange(c, r, ranges) {
+    for (var i = 0; i < ranges.length; i++) { var g = ranges[i]; if (c >= g.c1 && c <= g.c2 && r >= g.r1 && r <= g.r2) return true; }
+    return false;
+  }
+  function rangesNow() {
+    var a = S.selStart, b = S.selEnd;
+    var main = { c1: Math.min(a.c, b.c), r1: Math.min(a.r, b.r), c2: Math.max(a.c, b.c), r2: Math.max(a.r, b.r) };
+    return [main].concat((window.N8X && window.N8X.multi) || []);
+  }
+  function fastRender() {
+    if (!S || !C) return;
+    var t0 = performance.now();
+    var ranges = rangesNow();
+    var main = ranges[0];
+    var act = S.activeCell;
+    var tbody = document.getElementById("sheetBody");
+    var preview = window.N8X && window.N8X._ctrlPreview;
+    if (tbody) {
+      var tds = tbody.getElementsByTagName("td");
+      for (var i = 0; i < tds.length; i++) {
+        var td = tds[i], c = +td.dataset.c, r = +td.dataset.r;
+        var sel = inAnyRange(c, r, ranges);
+        td.classList.toggle("selected-range", sel);
+        td.classList.toggle("selected-active", sel && c === act.c && r === act.r);
+        if (preview) td.classList.toggle("n8x-ctrl-prev", c >= preview.c1 && c <= preview.c2 && r >= preview.r1 && r <= preview.r2);
+        // merged format extras (single sweep — no second DOM pass)
+        var cell = S.getCell(c, r), f = cell.fmt || {};
+        td.style.boxShadow = f.border ? "inset 0 0 0 1px #e2e8f0" : "";
+        if (f.wrap) { td.style.whiteSpace = "pre-wrap"; td.style.wordBreak = "break-word"; }
+        else if (td.style.whiteSpace === "pre-wrap") { td.style.whiteSpace = ""; td.style.wordBreak = ""; }
+        if ((f.decimals != null || f.thousands) && !f.numFmt && cell.val !== "" && cell.val != null && !isNaN(parseFloat(cell.val))) {
+          var n = parseFloat(cell.val), d = f.decimals != null ? f.decimals : 0;
+          td.textContent = f.thousands ? n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }) : n.toFixed(d);
+        }
+      }
+      var ths = tbody.getElementsByTagName("th");
+      for (var j = 0; j < ths.length; j++) {
+        var rr = +ths[j].dataset.row;
+        if (rr) ths[j].classList.toggle("row-active", rr >= main.r1 && rr <= main.r2);
+      }
+    }
+    var head = document.getElementById("sheetHead");
+    if (head) {
+      var hths = head.getElementsByTagName("th");
+      for (var k = 0; k < hths.length; k++) {
+        var cc = +hths[k].dataset.col;
+        if (cc) hths[k].classList.toggle("col-active", cc >= main.c1 && cc <= main.c2);
+      }
+    }
+    // auto-fill handle: one reused node, moved not recreated
+    var corner = document.getElementById("td_" + main.c2 + "_" + main.r2);
+    if (corner) {
+      if (!handleEl) { handleEl = document.createElement("div"); handleEl.className = "auto-fill-handle"; }
+      if (handleEl.parentNode !== corner) corner.appendChild(handleEl);
+    } else if (handleEl && handleEl.parentNode) handleEl.parentNode.removeChild(handleEl);
+    // address + formula bar
+    var ab = document.getElementById("addressBox");
+    if (ab) ab.textContent = (main.c1 === main.c2 && main.r1 === main.r2) ? colName(act.c) + act.r : colName(main.c1) + main.r1 + ":" + colName(main.c2) + main.r2;
+    var cellA = S.getCell(act.c, act.r);
+    var fi = document.getElementById("formulaInput"); if (fi && document.activeElement !== fi) fi.value = cellA.raw || "";
+    var sf = document.getElementById("statFormula");
+    if (sf) sf.textContent = cellA.raw && ("" + cellA.raw).charAt(0) === "=" ? "ƒx " + cellA.raw : "";
+    var tc = document.getElementById("textColorIndicator"); if (tc) tc.style.backgroundColor = (cellA.fmt && cellA.fmt.color) || "#000000";
+    var fc = document.getElementById("fillColorIndicator"); if (fc) fc.style.backgroundColor = (cellA.fmt && cellA.fmt.bgColor) || "transparent";
+    updateStatsThrottled(ranges);
+    perf.renders++; var ms = performance.now() - t0; perf.totalMs += ms; perf.lastMs = ms;
+  }
+  function computeStats(ranges) {
+    // O(stored cells), not O(range area): scan the workbook data once
+    var nonEmpty = 0, nums = [];
+    var prefix = S.activeSheet + ":";
+    Object.keys(S.data).forEach(function (key) {
+      if (key.indexOf(prefix) !== 0) return;
+      var cell = S.data[key]; if (!cell) return;
+      var m = key.slice(prefix.length).match(/^([A-Z]+)([0-9]+)$/); if (!m) return;
+      var c = 0; for (var i = 0; i < m[1].length; i++) c = c * 26 + (m[1].charCodeAt(i) - 64);
+      var r = +m[2];
+      if (!inAnyRange(c, r, ranges)) return;
+      if (cell.raw !== "" && cell.raw != null) nonEmpty++;
+      var v = parseFloat(cell.val); if (!isNaN(v) && cell.val !== "" && cell.val != null) nums.push(v);
+    });
+    var sum = nums.reduce(function (a, b) { return a + b; }, 0);
+    var trim = function (n) { return Math.round(n * 1e10) / 1e10; };
+    var set = function (id, txt) { var el = document.getElementById(id); if (el) el.textContent = txt; };
+    set("statCount", "Count: " + nonEmpty);
+    set("statSum", "Sum: " + (nums.length ? trim(sum) : 0));
+    set("statAvg", "Avg: " + (nums.length ? trim(sum / nums.length) : 0));
+    set("statMin", "Min: " + (nums.length ? trim(Math.min.apply(null, nums)) : 0));
+    set("statMax", "Max: " + (nums.length ? trim(Math.max.apply(null, nums)) : 0));
+    var info = document.getElementById("n8xSelInfo");
+    if (info) {
+      var total = ranges.reduce(function (n, g) { return n + (g.c2 - g.c1 + 1) * (g.r2 - g.r1 + 1); }, 0);
+      info.textContent = "▦ " + total.toLocaleString() + " cell" + (total === 1 ? "" : "s") + " selected" + (ranges.length > 1 ? " (" + ranges.length + " ranges)" : "");
+    }
+    lastStatsAt = performance.now();
+  }
+  function updateStatsThrottled(ranges) {
+    var now = performance.now();
+    if (!interacting && now - lastStatsAt > 150) { computeStats(ranges); return; }
+    if (!statsTimer) statsTimer = setTimeout(function () { statsTimer = null; computeStats(rangesNow()); }, 170);
+  }
+
+  /* ---------- geometry hit-testing (no per-move DOM hit tests) ---------- */
+  var geo = null;
+  function buildGeo() {
+    var cont = document.getElementById("gridContainer");
+    var anyTd = document.querySelector("#sheetBody td");
+    if (!cont || !anyTd) return null;
+    var sheet = S.activeSheet;
+    var customRows = S.rowHeights[sheet] && Object.keys(S.rowHeights[sheet]).length > 0;
+    var hiddenR = S.hiddenRows[sheet] && S.hiddenRows[sheet].size > 0;
+    var hiddenC = S.hiddenCols[sheet] && S.hiddenCols[sheet].size > 0;
+    if (customRows || hiddenR || hiddenC) return null; // fall back to elementFromPoint
+    var crect = cont.getBoundingClientRect();
+    var trect = anyTd.getBoundingClientRect();
+    var c0 = +anyTd.dataset.c, r0 = +anyTd.dataset.r;
+    // measured row pitch (the real rendered pitch is ~21px, not the 24px virtual unit)
+    var rowPx = 24 * (S.zoom || 1);
+    var all = document.querySelectorAll("#sheetBody td");
+    var best = null;
+    for (var q = 1; q < all.length; q++) {
+      if (+all[q].dataset.c === c0 && +all[q].dataset.r !== r0) {
+        var dR = +all[q].dataset.r - r0;
+        if (!best || Math.abs(dR) > Math.abs(best.dR)) best = { dR: dR, el: all[q] };
+      }
+    }
+    if (best) {
+      var dY2 = best.el.getBoundingClientRect().top - trect.top;
+      if (best.dR && dY2) rowPx = Math.abs(dY2 / best.dR);
+    }
+    var widths = S.colWidths[sheet] || {};
+    var defW = anyTd.offsetWidth || 100;
+    var lefts = [0], acc = 0;
+    for (var c = 1; c <= COLS; c++) { acc += widths[c] || defW; lefts.push(acc); }
+    return {
+      cont: cont, crect: crect,
+      originX: (trect.left - crect.left + cont.scrollLeft) - lefts[c0 - 1],
+      originY: (trect.top - crect.top + cont.scrollTop) - (r0 - 1) * rowPx,
+      lefts: lefts, rowPx: rowPx,
+    };
+  }
+  function cellFromXY(x, y) {
+    var cont = document.getElementById("gridContainer");
+    if (geo) {
+      var cx = x - geo.crect.left + cont.scrollLeft - geo.originX;
+      var cy = y - geo.crect.top + cont.scrollTop - geo.originY;
+      var c = COLS;
+      for (var i = 1; i <= COLS; i++) { if (cx < geo.lefts[i]) { c = i; break; } }
+      if (cx < 0) c = 1;
+      var r = Math.floor(cy / geo.rowPx) + 1;
+      return { c: Math.max(1, Math.min(COLS, c)), r: Math.max(1, Math.min(ROWS, r)) };
+    }
+    var el = document.elementFromPoint(x, y);
+    var td = el && el.closest ? el.closest("td") : null;
+    if (td && td.dataset.c) return { c: +td.dataset.c, r: +td.dataset.r };
+    return null;
+  }
+
+  /* ---------- rAF drag engine ---------- */
+  var drag2 = null, rafId = null, lastXY = null, autoId = null;
+  function setSel(a, b, active) {
+    S.selStart = { c: a.c, r: a.r }; S.selEnd = { c: b.c, r: b.r };
+    if (active) S.activeCell = { c: active.c, r: active.r };
+    if (window.N8X) window.N8X.focus = { c: b.c, r: b.r };
+    fastRender();
+  }
+  function normR(a, b) { return { c1: Math.min(a.c, b.c), r1: Math.min(a.r, b.r), c2: Math.max(a.c, b.c), r2: Math.max(a.r, b.r) }; }
+  function paintFromXY() {
+    rafId = null;
+    if (!drag2 || !lastXY) return;
+    var p = cellFromXY(lastXY.x, lastXY.y);
+    if (!p) return;
+    if (drag2.mode === "ctrl") {
+      var rg = normR(drag2.start, p);
+      var prev = window.N8X._ctrlPreview;
+      if (!prev || prev.c1 !== rg.c1 || prev.r1 !== rg.r1 || prev.c2 !== rg.c2 || prev.r2 !== rg.r2) { window.N8X._ctrlPreview = rg; drag2.cur = p; fastRender(); }
+    } else if (drag2.mode === "extend") {
+      if (S.selEnd.c !== p.c || S.selEnd.r !== p.r) setSel(S.activeCell, p, S.activeCell);
+    } else {
+      if (S.selEnd.c !== p.c || S.selEnd.r !== p.r) setSel(S.selStart, p, S.activeCell);
+    }
+  }
+  function schedulePaint() { if (!rafId) rafId = requestAnimationFrame(paintFromXY); }
+  function autoScrollLoop() {
+    autoId = null;
+    if (!drag2 || !lastXY) return;
+    var cont = document.getElementById("gridContainer");
+    var rect = cont.getBoundingClientRect();
+    var vx = 0, vy = 0, EDGE = 52, MAX = 22;
+    if (lastXY.y < rect.top + EDGE) vy = -Math.ceil((1 - (lastXY.y - rect.top) / EDGE) * MAX);
+    else if (lastXY.y > rect.bottom - EDGE) vy = Math.ceil((1 - (rect.bottom - lastXY.y) / EDGE) * MAX);
+    if (lastXY.x < rect.left + EDGE) vx = -Math.ceil((1 - (lastXY.x - rect.left) / EDGE) * MAX);
+    else if (lastXY.x > rect.right - EDGE) vx = Math.ceil((1 - (rect.right - lastXY.x) / EDGE) * MAX);
+    if (vx || vy) {
+      cont.scrollTop += vy; cont.scrollLeft += vx;
+      schedulePaint();
+      autoId = requestAnimationFrame(autoScrollLoop);
+    }
+  }
+  function kickAutoScroll() { if (!autoId) autoId = requestAnimationFrame(autoScrollLoop); }
+  function endDrag() {
+    if (!drag2) return;
+    if (drag2.mode === "ctrl" && window.N8X) {
+      var rg = window.N8X._ctrlPreview;
+      window.N8X._ctrlPreview = null;
+      if (rg) {
+        var idx = window.N8X.multi.findIndex(function (x) { return x.c1 === rg.c1 && x.r1 === rg.r1 && x.c2 === rg.c2 && x.r2 === rg.r2; });
+        if (idx >= 0) window.N8X.multi.splice(idx, 1); else window.N8X.multi.push(rg);
+      }
+    }
+    drag2 = null; lastXY = null;
+    if (rafId) cancelAnimationFrame(rafId), rafId = null;
+    if (autoId) cancelAnimationFrame(autoId), autoId = null;
+    interacting = false;
+    document.body.classList.remove("n8x-interacting");
+    perf.drags++;
+    computeStats(rangesNow());
+    fastRender();
+  }
+  function onDown(e) {
+    if (!S || !C || !window.N8X || !window.N8X.ready) return;
+    if (e.target.closest && e.target.closest(".auto-fill-handle")) return;
+    var cont = document.getElementById("gridContainer");
+    if (!cont || !cont.contains(e.target)) return;
+    var td = e.target.closest ? e.target.closest("td") : null;
+    if (!td || !td.dataset.c) return; // headers etc: v2 handlers keep working
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    var c = +td.dataset.c, r = +td.dataset.r;
+    e.preventDefault(); e.stopPropagation();
+    if (e.pointerType === "touch") window.N8X._lastTouch = { t: Date.now(), c: c, r: r };
+    cont.focus();
+    try { cont.setPointerCapture(e.pointerId); } catch (err) {}
+    geo = buildGeo();
+    interacting = true;
+    document.body.classList.add("n8x-interacting");
+    if (e.pointerType === "touch" && window.N8X.rangeMode) {
+      if (!window.N8X._touchAnchor) {
+        window.N8X.multi = []; window.N8X._touchAnchor = { c: c, r: r };
+        drag2 = { mode: "anchor-only" };
+        setSel({ c: c, r: r }, { c: c, r: r }, { c: c, r: r });
+        toast("Anchor set at " + colName(c) + r + " — tap or drag to the opposite corner.", "info");
+      } else {
+        drag2 = { mode: "drag" };
+        setSel(window.N8X._touchAnchor, { c: c, r: r }, window.N8X._touchAnchor);
+      }
+    } else if (e.ctrlKey || e.metaKey) {
+      drag2 = { mode: "ctrl", start: { c: c, r: r }, cur: { c: c, r: r } };
+      window.N8X._ctrlPreview = { c1: c, r1: r, c2: c, r2: r };
+      fastRender();
+    } else if (e.shiftKey) {
+      drag2 = { mode: "extend" };
+      setSel(S.activeCell, { c: c, r: r }, S.activeCell);
+    } else {
+      window.N8X.multi = []; window.N8X._ctrlAStage = 0;
+      drag2 = { mode: "drag" };
+      setSel({ c: c, r: r }, { c: c, r: r }, { c: c, r: r });
+    }
+    lastXY = { x: e.clientX, y: e.clientY };
+  }
+  function onMove(e) {
+    if (!drag2) return;
+    lastXY = { x: e.clientX, y: e.clientY };
+    schedulePaint();
+    kickAutoScroll();
+  }
+  function onUp() { if (drag2) endDrag(); }
+
+  /* ---------- install (after the v2 patch is ready) ---------- */
+  function install() {
+    S = window._n8store; C = window._n8ctrl;
+    if (!S || !C || !window.N8X || !window.N8X.ready) return false;
+    C._origRenderSelection = C.renderSelection;
+    C.renderSelection = fastRender;
+    var cont = document.getElementById("gridContainer");
+    document.addEventListener("pointerdown", onDown, true);
+    window.addEventListener("pointermove", onMove, { capture: true, passive: true });
+    window.addEventListener("pointerup", onUp, true);
+    window.addEventListener("pointercancel", onUp, true);
+    cont.addEventListener("selectstart", function (e) { e.preventDefault(); }, true);
+    cont.addEventListener("dragstart", function (e) { e.preventDefault(); }, true);
+    window.N8X.perf = function () { return { renders: perf.renders, avgRenderMs: perf.renders ? +(perf.totalMs / perf.renders).toFixed(2) : 0, lastRenderMs: +perf.lastMs.toFixed(2), drags: perf.drags }; };
+    window.N8X._fastRender = fastRender;
+    window.N8X.version = "2.2.0";
+    // Tools menu: perf check
+    var dd = document.getElementById("toolsMenu");
+    if (dd && !dd.querySelector('[data-n8x-cmd="N8X_Perf"]')) {
+      var b = document.createElement("button");
+      b.className = "dropdown-btn"; b.setAttribute("data-n8x-cmd", "N8X_Perf");
+      b.innerHTML = '<div style="font-weight:600;display:flex;align-items:center;gap:8px">⚡ Selection Perf Check</div>';
+      b.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        document.querySelectorAll(".menu-item").forEach(function (m) { m.classList.remove("active"); });
+        var t0 = performance.now(); var saved = { a: S.selStart, b: S.selEnd };
+        S.selStart = { c: 1, r: 1 }; S.selEnd = { c: 26, r: 200 };
+        fastRender(); var big = performance.now() - t0;
+        S.selStart = saved.a; S.selEnd = saved.b; fastRender();
+        var p = window.N8X.perf();
+        toast("Selection paint: " + big.toFixed(1) + "ms for a 5,200-cell range · avg render " + p.avgRenderMs + "ms over " + p.renders + " renders.", big < 34 ? "ok" : "info");
+      });
+      dd.appendChild(b);
+    }
+    fastRender();
+    return true;
+  }
+  var tries = 0;
+  var timer = setInterval(function () { tries++; if (install() || tries > 90) clearInterval(timer); }, 250);
 })();
 
 </script>
