@@ -6,6 +6,10 @@ A single-file, offline-capable spreadsheet app — dark, high-contrast, virtuali
 
 **Data:** saves automatically to the browser's `localStorage` (`n8sheetz_state`). Use **File → Save As (.json)** for a portable workbook backup; **File → Open (CSV)** and **Import Workbook (.json)** bring data back in.
 
+## v2.4.1 (Nov 4, 2026)
+
+- 🐛 **Crosshair band fix.** The v2.3 crosshair guides painted from a secondary render path, so after tapping around they stayed frozen on an old column while the selection moved on (Nathan's screenshot: selection on C5, band stuck on column D). Bands now paint from the single fast-render hook every selection paint uses — they track the active cell on every tap, drag, scroll and edit. Regression test added (tap D7 → tap C5, band must follow both).
+
 ## v2.4 (Nov 4, 2026)
 
 - 📚 **Template library rebuilt: 75 → 40.** Cut 35 primitive/duplicate presets (dup budgets, novelty trackers, thin calculators). Every survivor was rewritten as a real working table: 5–10 rows of realistic sample data (Arc Beverage inventory SKUs, a Clark Family Projects invoice, homeschool grades/lessons, mileage at the IRS rate), working formulas throughout (totals, averages, letter grades via IF, amortization balances, pipeline sums), status dots 🟢🟡🔴, ✅ trackers, and progress-bar cells. Average template depth went from 2.7 rows to 7+. Start screen now reads 'Search 40 templates…' and previews reflect the new data.

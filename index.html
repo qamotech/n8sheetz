@@ -18699,6 +18699,7 @@ window.N8X_TPL = {"Blank":{"h":[],"r":[],"cols":0,"rows":0,"fx":0},"Annual Budge
     var fc = document.getElementById("fillColorIndicator"); if (fc) fc.style.backgroundColor = (cellA.fmt && cellA.fmt.bgColor) || "transparent";
     updateStatsThrottled(ranges);
     perf.renders++; var ms = performance.now() - t0; perf.totalMs += ms; perf.lastMs = ms;
+    if (window.N8X && window.N8X._afterRender) window.N8X._afterRender();
   }
   function computeStats(ranges) {
     // O(stored cells), not O(range area): scan the workbook data once
@@ -19228,19 +19229,18 @@ window.N8X_TPL = {"Blank":{"h":[],"r":[],"cols":0,"rows":0,"fx":0},"Annual Budge
     }, { passive: true });
   }
 
-  /* ---------- crosshair bands (wrap the v2.2 fast render) ---------- */
+  /* ---------- crosshair bands (painted from the fast-render hook so they
+       can never go stale — every selection paint flows through it) ---------- */
+  function applyBands() {
+    document.querySelectorAll("#sheetBody td.band-r, #sheetBody td.band-c").forEach(function (td) { td.classList.remove("band-r", "band-c"); });
+    if (!ui.crosshair || !S) return;
+    var a = S.activeCell;
+    document.querySelectorAll('#sheetBody td[data-r="' + a.r + '"]').forEach(function (td) { if (!td.classList.contains("selected-range")) td.classList.add("band-r"); });
+    document.querySelectorAll('#sheetBody td[data-c="' + a.c + '"]').forEach(function (td) { if (!td.classList.contains("selected-range")) td.classList.add("band-c"); });
+  }
   function wireCrosshair() {
-    var fast = C.renderSelection;
-    C.renderSelection = function () {
-      fast();
-      document.querySelectorAll("#sheetBody td.band-r, #sheetBody td.band-c").forEach(function (td) { td.classList.remove("band-r", "band-c"); });
-      if (!ui.crosshair) return;
-      var a = S.activeCell;
-      var row = document.querySelectorAll('#sheetBody td[data-r="' + a.r + '"]');
-      var col = document.querySelectorAll('#sheetBody td[data-c="' + a.c + '"]');
-      row.forEach(function (td) { if (!td.classList.contains("selected-range")) td.classList.add("band-r"); });
-      col.forEach(function (td) { if (!td.classList.contains("selected-range")) td.classList.add("band-c"); });
-    };
+    window.N8X._afterRender = applyBands;
+    applyBands();
   }
 
   /* ---------- checkbox cells: click toggles ☐/☑ ---------- */
@@ -19321,7 +19321,7 @@ window.N8X_TPL = {"Blank":{"h":[],"r":[],"cols":0,"rows":0,"fx":0},"Annual Budge
     addMenuItem("toolsMenu", "🔍 Cell Inspector", cmdInspector, "Inspect");
     addMenuItem("toolsMenu", "⌨️ Keyboard Shortcuts", cmdShortcuts, "Inspect");
     if (ui.gridlines === false) document.body.classList.add("n8x-nogrid");
-    window.N8X.version = "2.4.0";
+    window.N8X.version = "2.4.1";
     window.N8X._v23 = { logoSVG: logoSVG, ui: ui };
     return true;
   }
