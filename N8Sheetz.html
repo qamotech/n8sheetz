@@ -19999,8 +19999,131 @@ body.n8x-range-on #n8xRangeBtn{box-shadow:0 0 0 2px var(--selection-border,#38bd
   body.n8x-print-sel #sheetHead th.n8x-print-hide{display:none!important}
 }
 td.n8x-ctrl-prev{background:rgba(56,189,248,.35)!important;box-shadow:inset 0 0 0 1px #38bdf8}
+/* --- v2.1 preset previews --- */
+.ss-card-preview.n8x-preview{display:block!important;background:#0b1220!important;padding:0!important;align-items:stretch!important;justify-content:flex-start!important}
+.n8x-pv-table{width:100%!important;border-collapse:collapse;table-layout:fixed!important}
+.n8x-pv-table th,.n8x-pv-table td{width:auto!important;font-size:8.5px;line-height:1.5;padding:2px 4px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid rgba(148,163,184,.14);color:#dbe7f5}
+.n8x-pv-table th{font-weight:700}
+.n8x-pv-table tbody tr:nth-child(even) td{background:#0d1626}
+.n8x-pv-num{text-align:right!important}
+.n8x-pv-fx{color:#7dd3fc;font-weight:700}
+.n8x-pv-dash{display:inline-block;height:3px;border-radius:2px;background:#334155;vertical-align:middle}
+.n8x-pv-foot{position:absolute;left:0;right:0;bottom:0;padding:3px 6px;font-size:9.5px;color:#94a3b8;background:rgba(2,6,23,.82);border-top:1px solid rgba(148,163,184,.16);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.n8x-pv-blank{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100% - 18px);gap:2px;background-image:linear-gradient(rgba(56,189,248,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.10) 1px,transparent 1px);background-size:16px 16px}
+.n8x-pv-plus{font-size:34px;color:#38bdf8;line-height:1}
+.n8x-pv-blank-label{font-size:10px;color:#94a3b8}
+.n8x-card-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.ss-card:hover .ss-card-preview.n8x-preview{border-color:var(--accent);box-shadow:0 6px 22px rgba(56,189,248,.18)}
 
 </style>
+<script id="n8x_tpl">
+window.N8X_TPL = {"Annual Budget":{"h":["Category","Jan","Feb","Mar"],"r":[["Income","","",""],["Rent","","",""],["Food","","",""]],"cols":8,"rows":7,"fx":7},"Invoice":{"h":["Item","Description","Qty","Unit Price"],"r":[["1","Consulting Servi","1","$150"],["2","Design Work","3","$75"],["3","Hosting","12","$10"]],"cols":5,"rows":6,"fx":6},"Time Tracker":{"h":["Date","Project","Task","Start"],"r":[["=TODAY()","Project A","Development","09:00"],["=TODAY()","Project B","Design","14:00"]],"cols":7,"rows":2,"fx":2},"Project Timeline":{"h":["Task","Owner","Start Date","End Date"],"r":[["Requirements","Team Lead","2024-01-01","2024-01-15"],["Design","Designer","2024-01-10","2024-01-30"],["Development","Dev Team","2024-01-25","2024-03-01"]],"cols":6,"rows":3,"fx":0},"Gantt Chart":{"h":["Task","Owner","Start","End"],"r":[["Planning","PM","Jan 1","Jan 7"],["Design","UX","Jan 5","Jan 14"],["Development","Dev","Jan 10","Jan 28"]],"cols":8,"rows":3,"fx":4},"Employee Schedule":{"h":["Employee","Mon","Tue","Wed"],"r":[["Alice","9-5","9-5","9-5"],["Bob","9-5","9-5","OFF"],["Carol","OFF","8-4","8-4"]],"cols":9,"rows":3,"fx":0},"Inventory Management":{"h":["SKU","Product Name","Category","Stock"],"r":[["SKU-001","Widget A","Electronics","150"],["SKU-002","Gadget B","Electronics","8"],["SKU-003","Supply C","Office","300"]],"cols":7,"rows":3,"fx":0},"CRM Tracker":{"h":["Contact","Company","Email","Phone"],"r":[["Jane Smith","Acme Corp","jane@acme.com","555-0101"],["Bob Jones","TechCo","bob@techco.com","555-0102"]],"cols":6,"rows":2,"fx":0},"Sales Dashboard":{"h":["Rep","Q1","Q2","Q3"],"r":[["Alice","$12000","$15000","$18000"],["Bob","$9000","$11000","$13000"]],"cols":8,"rows":2,"fx":4},"Event Planner":{"h":["Task","Owner","Deadline","Status"],"r":[["Venue Booking","Sarah","2024-02-01","Done"],["Catering","Mike","2024-02-15","In Progress"],["Invitations","Sarah","2024-01-20","Done"]],"cols":6,"rows":3,"fx":0},"Wedding Budget":{"h":["Category","Estimated","Actual","Difference"],"r":[["Venue","$5000","$4800","=B2-C2"],["Catering","$3000","",""],["Photography","$2000","",""]],"cols":6,"rows":5,"fx":2},"Travel Itinerary":{"h":["Date","Time","Activity","Location"],"r":[["2024-06-10","08:00","Flight to Paris","JFK to CDG"],["2024-06-10","18:00","Hotel Check-in","Hotel Lumiere"],["2024-06-11","10:00","Eiffel Tower","Champ de Mars"]],"cols":6,"rows":3,"fx":0},"Workout Log":{"h":["Date","Exercise","Sets","Reps"],"r":[["=TODAY()","Bench Press","4","8"],["=TODAY()","Squat","4","6"],["=TODAY()","Deadlift","3","5"]],"cols":6,"rows":3,"fx":3},"Diet Planner":{"h":["Meal","Food Item","Calories","Protein (g)"],"r":[["Breakfast","Oatmeal","300","10"],["Breakfast","Greek Yogurt","120","15"],["Lunch","Grilled Chicken","350","42"]],"cols":6,"rows":4,"fx":0},"Habit Tracker":{"h":["Habit","Mon","Tue","Wed"],"r":[["Drink 8 glasses","","",""],["Exercise 30 min","","",""],["Read 20 pages","","",""]],"cols":8,"rows":4,"fx":0},"Social Media Calendar":{"h":["Date","Platform","Content Type","Caption"],"r":[["2024-01-15","Instagram","Photo","New product laun"],["2024-01-16","Twitter","Thread","Tips for product"],["2024-01-17","LinkedIn","Article","Industry insight"]],"cols":5,"rows":3,"fx":0},"Content Planner":{"h":["Title","Type","Platform","Target Date"],"r":[["10 Productivity ","Blog Post","Website","2024-02-01"],["Product Review","Video","YouTube","2024-02-10"]],"cols":6,"rows":2,"fx":0},"Bug Tracker":{"h":["ID","Title","Severity","Module"],"r":[["BUG-001","Login fails on m","High","Auth"],["BUG-002","Dashboard chart ","Medium","UI"],["BUG-003","Email not sendin","Critical","Notifications"]],"cols":7,"rows":3,"fx":0},"Feature Roadmap":{"h":["Feature","Priority","Status","Quarter"],"r":[["Dark Mode","High","Done","Q1"],["API v2","High","In Progress","Q2"],["Mobile App","Medium","Planned","Q3"]],"cols":6,"rows":3,"fx":0},"Agile Backlog":{"h":["Story ID","User Story","Priority","Story Points"],"r":[["US-001","As a user I can ","High","3"],["US-002","As a user I can ","High","5"]],"cols":6,"rows":2,"fx":0},"Sprint Planner":{"h":["Task","Assignee","Story Points","Priority"],"r":[["Design login scr","Alice","3","High"],["Build login API","Bob","5","High"],["Write unit tests","Carol","2","Medium"]],"cols":7,"rows":3,"fx":0},"OKR Tracker":{"h":["Objective","Key Result","Owner","Target"],"r":[["Grow Revenue","Increase MRR by ","CEO","$120K"],["Improve Product","NPS score > 50","CPO","50"]],"cols":6,"rows":2,"fx":0},"KPI Dashboard":{"h":["KPI","Target","Actual","Variance"],"r":[["Monthly Revenue","$100K","$94K","=C2-B2"],["Customer Churn","< 5%","3.2%",""],["Support Tickets","< 100","87",""]],"cols":5,"rows":3,"fx":1},"Financial Statement":{"h":["Account","Q1","Q2","Q3"],"r":[["Revenue","$150K","$165K","$180K"],["COGS","$75K","$80K","$88K"],["Gross Profit","=B2-B3","=C2-C3","=D2-D3"]],"cols":6,"rows":4,"fx":8},"Balance Sheet":{"h":["Item","Amount","Category"],"r":[["ASSETS","",""],["Cash","$50,000","Current Asset"],["Accounts Receiva","$12,000","Current Asset"]],"cols":3,"rows":7,"fx":0},"Income Statement":{"h":["Line Item","This Month","Last Month","YTD"],"r":[["Revenue","$25,000","$22,000","$290,000"],["Cost of Goods","$10,000","$9,000","$120,000"],["Gross Profit","=B2-B3","=C2-C3","=D2-D3"]],"cols":4,"rows":5,"fx":6},"Cash Flow":{"h":["Date","Description","Inflow","Outflow"],"r":[["=TODAY()","Opening Balance","$10,000",""],["","Client Payment","$5,000",""],["","Office Rent","","$2,000"]],"cols":6,"rows":4,"fx":1},"Expense Report":{"h":["Date","Description","Category","Amount"],"r":[["2024-01-10","Team Lunch","Meals","$87.50"],["2024-01-12","Uber to Airport","Transport","$34.20"],["2024-01-15","Software License","Software","$199.00"]],"cols":6,"rows":3,"fx":0},"Mileage Tracker":{"h":["Date","From","To","Miles"],"r":[["2024-01-08","Office","Client HQ","45"],["2024-01-10","Office","Airport","28"]],"cols":7,"rows":2,"fx":2},"Tax Calculator":{"h":["Income Source","Amount","Tax Rate","Tax Owed"],"r":[["Salary","$75,000","22%","=B2*C2"],["Freelance","$15,000","22%","=B3*C3"],["Capital Gains","$5,000","15%","=B4*C4"]],"cols":4,"rows":4,"fx":5},"Loan Amortization":{"h":["Month","Payment","Principal","Interest"],"r":[["1","$500","$350","$150"],["2","$500","$352","$148"],["3","$500","$354","$146"]],"cols":5,"rows":3,"fx":0},"Investment Tracker":{"h":["Asset","Type","Shares","Buy Price"],"r":[["AAPL","Stock","10","$150"],["BTC","Crypto","0.5","$30000"]],"cols":8,"rows":2,"fx":6},"Crypto Portfolio":{"h":["Coin","Ticker","Holdings","Avg Buy"],"r":[["Bitcoin","BTC","0.25","$35000"],["Ethereum","ETH","2","$1800"]],"cols":8,"rows":2,"fx":6},"Real Estate ROI":{"h":["Property","Purchase Price","Rent/Month","Annual Rent"],"r":[["123 Main St","$250,000","$2,000","=C2*12"]],"cols":7,"rows":1,"fx":3},"Rent Ledger":{"h":["Unit","Tenant","Lease Start","Lease End"],"r":[["Apt 1A","Alice Johnson","2023-01-01","2024-12-31"],["Apt 2B","Bob Smith","2023-06-01","2024-05-31"]],"cols":7,"rows":2,"fx":0},"Household Chores":{"h":["Chore","Frequency","Assigned To","Last Done"],"r":[["Vacuuming","Weekly","Alice","2024-01-07"],["Dishes","Daily","Rotate","2024-01-08"],["Lawn Mowing","Bi-weekly","Bob","2024-01-01"]],"cols":5,"rows":3,"fx":0},"Meal Planner":{"h":["Day","Breakfast","Lunch","Dinner"],"r":[["Monday","Oatmeal","Salad","Grilled Chicken"],["Tuesday","Eggs","Sandwich","Pasta"],["Wednesday","Smoothie","Soup","Steak"]],"cols":6,"rows":3,"fx":0},"Grocery List":{"h":["Item","Category","Qty","Unit"],"r":[["Apples","Produce","6","pieces"],["Chicken Breast","Meat","2","lbs"],["Greek Yogurt","Dairy","3","cups"]],"cols":6,"rows":3,"fx":0},"Recipe Book":{"h":["Recipe","Category","Servings","Prep Time"],"r":[["Spaghetti Bologn","Pasta","4","15 min"],["Caesar Salad","Salad","2","10 min"]],"cols":6,"rows":2,"fx":0},"Movie Ratings":{"h":["Title","Genre","Year","Director"],"r":[["Inception","Sci-Fi","2010","Nolan"],["The Dark Knight","Action","2008","Nolan"]],"cols":6,"rows":2,"fx":0},"Book List":{"h":["Title","Author","Genre","Status"],"r":[["Atomic Habits","James Clear","Self-Help","Read"],["Deep Work","Cal Newport","Productivity","Reading"]],"cols":6,"rows":2,"fx":0},"Gift Tracker":{"h":["Recipient","Occasion","Date","Gift Idea"],"r":[["Mom","Birthday","2024-03-15","Flowers + Spa"],["Dad","Fathers Day","2024-06-16","Tool Set"]],"cols":6,"rows":2,"fx":0},"Party Guest List":{"h":["Name","RSVP","Dietary Needs","Table"],"r":[["Alice Johnson","Yes","Vegetarian","Table 1"],["Bob Smith","Maybe","None",""]],"cols":6,"rows":2,"fx":0},"Student Grades":{"h":["Student","Assignment 1","Assignment 2","Midterm"],"r":[["Alice","95","88","91"],["Bob","72","68","74"]],"cols":7,"rows":2,"fx":2},"Class Schedule":{"h":["Time","Monday","Tuesday","Wednesday"],"r":[["08:00","Math","English","Math"],["09:00","English","History","English"],["10:00","Science","Math","History"]],"cols":6,"rows":3,"fx":0},"Lesson Plan":{"h":["Date","Subject","Topic","Learning Goals"],"r":[["2024-01-15","Math","Fractions","Understand fract"],["2024-01-16","English","Verbs","Identify action "]],"cols":6,"rows":2,"fx":0},"Flashcards":{"h":["Front (Question)","Back (Answer)","Category","Mastered"],"r":[["What is mitosis?","Cell division pr","Biology","Yes"],["H2O is?","Water","Chemistry","Yes"]],"cols":4,"rows":2,"fx":0},"Vocabulary List":{"h":["Word","Definition","Part of Speech","Example Sentence"],"r":[["Ephemeral","Lasting a very s","Adjective","The ephemeral be"],["Serendipity","Finding somethin","Noun","Meeting her was "]],"cols":5,"rows":2,"fx":0},"Research Notes":{"h":["Date","Source","Topic","Key Finding"],"r":[["2024-01-10","Smith (2022)","Climate Change","CO2 rising"],["2024-01-11","WHO Report","Public Health","Vaccine efficacy"]],"cols":5,"rows":2,"fx":0},"Bibliography":{"h":["Author(s)","Year","Title","Publisher"],"r":[["Smith, J.","2022","Introduction to ","MIT Press"],["Doe, A.","2023","Machine Learning","Nature AI"]],"cols":5,"rows":2,"fx":0},"Blank":{"h":[],"r":[],"cols":0,"rows":0,"fx":0},"Monthly budget":{"h":["Category","Budget","Spent","Remaining"],"r":[["Housing","$1500","","=B2-C2"],["Food","$600","","=B3-C3"],["Transport","$300","","=B4-C4"]],"cols":4,"rows":5,"fx":7},"To-do list":{"h":["#","Task","Priority","Due Date"],"r":[["1","Review project p","High","2024-01-15"],["2","Send email to cl","Medium","2024-01-14"],["3","Update documenta","Low","2024-01-20"]],"cols":6,"rows":3,"fx":0},"Annual budget":{"h":["Month","Income","Fixed Costs","Variable Costs"],"r":[["January","","",""],["February","","",""],["March","","",""]],"cols":6,"rows":3,"fx":3},"2026 Calendar":{"h":["Week","Mon","Tue","Wed"],"r":[["Week 1","Jan 1","Jan 2","Jan 3"],["Week 2","Jan 8","Jan 9","Jan 10"],["Week 3","Jan 15","Jan 16","Jan 17"]],"cols":8,"rows":3,"fx":0},"Software Requirements":{"h":["Req ID","Title","Description","Priority"],"r":[["REQ-001","User Authenticat","Users must log i","High"],["REQ-002","Data Export","Export to CSV an","Medium"]],"cols":6,"rows":2,"fx":0},"API Documentation":{"h":["Endpoint","Method","Auth","Response"],"r":[["/api/users","GET","Bearer","Array of users"],["/api/login","POST","None","JWT token"]],"cols":5,"rows":2,"fx":0},"Network Inventory":{"h":["Device","IP Address","MAC Address","Location"],"r":[["Router-01","192.168.1.1","AA:BB:CC:00:01","Server Room"],["Switch-02","192.168.1.2","AA:BB:CC:00:02","Floor 2"]],"cols":6,"rows":2,"fx":0},"Server Monitoring":{"h":["Server","CPU %","RAM %","Disk %"],"r":[["prod-web-01","45%","72%","60%"],["prod-db-01","30%","85%","75%"]],"cols":6,"rows":2,"fx":0},"HR Onboarding":{"h":["Task","Responsible","Due","Status"],"r":[["Send offer lette","HR","Day -3","Done"],["Set up workstati","IT","Day -1","In Progress"],["Badge and access","Security","Day 1","Pending"]],"cols":5,"rows":3,"fx":0},"Performance Review":{"h":["Employee","Department","Q1 Score","Q2 Score"],"r":[["Alice Smith","Engineering","4.2","4.5"],["Bob Lee","Marketing","3.8","3.9"]],"cols":8,"rows":2,"fx":2},"Subscription Tracker":{"h":["Service","Category","Monthly Cost","Annual Cost"],"r":[["Netflix","Entertainment","$15.99","=B2*12"],["Spotify","Music","$9.99","=B3*12"],["Adobe CC","Creative","$54.99","=B4*12"]],"cols":6,"rows":3,"fx":3},"Vendor Comparison":{"h":["Vendor","Product","Price","Quality (1-10)"],"r":[["Acme Co","Widget A","$12.50","8"],["BestSupply","Widget A","$11.00","7"]],"cols":6,"rows":2,"fx":2},"Risk Register":{"h":["Risk ID","Description","Category","Likelihood"],"r":[["R-001","Data breach","Security","High"],["R-002","Key employee lea","HR","Medium"]],"cols":7,"rows":2,"fx":0},"Marketing Campaign":{"h":["Campaign","Channel","Start","End"],"r":[["Spring Sale","Email","2024-03-01","2024-03-31"],["Brand Awareness","Social","2024-03-01","2024-03-31"]],"cols":7,"rows":2,"fx":0},"SEO Tracker":{"h":["Keyword","Search Vol","Current Rank","Target Rank"],"r":[["spreadsheet app","12000","8","3"],["online sheets","5500","12","5"]],"cols":6,"rows":2,"fx":0},"Product Backlog":{"h":["Epic","Feature","User Story","Points"],"r":[["Auth","SSO Login","As a user I want","5"],["Dashboard","Analytics","As a user I want","8"]],"cols":7,"rows":2,"fx":0},"Interview Scorecard":{"h":["Candidate","Role","Technical (1-5)","Communication (1-5)"],"r":[["Jane Doe","Sr. Developer","5","4"],["John Smith","Sr. Developer","3","4"]],"cols":7,"rows":2,"fx":2},"Startup Metrics":{"h":["Metric","Jan","Feb","Mar"],"r":[["MRR","$5K","$7K","$9K"],["Users","100","180","290"],["Churn Rate","8%","6%","5%"]],"cols":7,"rows":3,"fx":0},"Competitor Analysis":{"h":["Competitor","Market Share","Price","Key Features"],"r":[["Competitor A","35%","$99/mo","AI tools, API"],["Competitor B","20%","$49/mo","Simple UI"]],"cols":6,"rows":2,"fx":0},"Client Billing":{"h":["Client","Project","Hours","Rate"],"r":[["Acme Corp","Website Redesign","40","$150"],["TechCo","API Integration","25","$175"]],"cols":8,"rows":2,"fx":4},"Equipment Maintenance":{"h":["Equipment","Serial #","Last Service","Next Service"],"r":[["HVAC Unit","SN-12345","2023-10-01","2024-04-01"],["Server Rack","SN-67890","2023-12-01","2024-06-01"]],"cols":7,"rows":2,"fx":0},"Customer Feedback":{"h":["Date","Customer","Product","Rating"],"r":[["2024-01-10","Alice M.","Pro Plan","5 stars"],["2024-01-11","Bob K.","Free Plan","2 stars"]],"cols":7,"rows":2,"fx":0},"Energy Usage":{"h":["Month","kWh Used","Cost ($)","Solar Generated"],"r":[["January","850","$102","150"],["February","790","$94.80","200"]],"cols":6,"rows":2,"fx":4},"Contact Directory":{"h":["Name","Title","Company","Email"],"r":[["Alice Johnson","CEO","Acme Corp","alice@acme.com"],["Bob Smith","CTO","TechCo","bob@techco.com"]],"cols":7,"rows":2,"fx":0}};
+</script>
+<script id="n8x_previews">
+/* ===== N8Sheetz v2.1 — preset (template) preview upgrade =====
+   Replaces the fake 5x5 random-dash previews with true miniatures of each
+   template's real headers + first rows, on the app's dark theme.
+   Also wires the start-screen search box (previously decorative). */
+(function () {
+  "use strict";
+  var CATS = [
+    { name: "Money", color: "#34d399", keys: ["Budget", "Invoice", "Financial", "Balance Sheet", "Income", "Cash Flow", "Expense", "Tax", "Loan", "Investment", "Crypto", "Real Estate", "Rent Ledger", "Billing", "Startup Metrics"] },
+    { name: "Work", color: "#38bdf8", keys: ["Project", "Gantt", "Schedule", "CRM", "Sales", "Bug", "Roadmap", "Backlog", "Sprint", "OKR", "KPI", "Dashboard", "Requirements", "Campaign", "SEO", "Competitor", "Vendor", "Risk", "Interview", "Performance", "Onboarding", "Feedback"] },
+    { name: "Tech", color: "#22d3ee", keys: ["API", "Network", "Server", "Software", "Equipment", "Energy"] },
+    { name: "Life", color: "#fbbf24", keys: ["Wedding", "Travel", "Household", "Meal", "Grocery", "Recipe", "Gift", "Party", "Contact", "Event", "Subscription", "To-do", "Calendar", "Chores"] },
+    { name: "Health", color: "#fb7185", keys: ["Workout", "Diet", "Habit"] },
+    { name: "Learning", color: "#a78bfa", keys: ["Student", "Class", "Lesson", "Flashcards", "Vocabulary", "Research", "Bibliography", "Book", "Movie", "Content", "Social Media"] },
+  ];
+  function catFor(name) {
+    for (var i = 0; i < CATS.length; i++) for (var j = 0; j < CATS[i].keys.length; j++)
+      if (name.indexOf(CATS[i].keys[j]) >= 0) return CATS[i];
+    return { name: "General", color: "#38bdf8" };
+  }
+  function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+  function esc(t) { return ("" + t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  function buildPreviews() {
+    var data = window.N8X_TPL; if (!data) return false;
+    var cards = document.querySelectorAll(".ss-card");
+    if (!cards.length) return false;
+    var done = 0;
+    cards.forEach(function (card) {
+      var titleEl = card.querySelector(".ss-card-title");
+      var prev = card.querySelector(".ss-card-preview");
+      if (!titleEl || !prev) return;
+      var name = titleEl.innerText.trim();
+      var t = data[name]; if (!t) return;
+      var cat = catFor(name);
+      prev.removeAttribute("style");
+      prev.classList.add("n8x-preview");
+      prev.style.borderTop = "3px solid " + cat.color;
+      card.setAttribute("data-n8x-cat", cat.name);
+      var html = "";
+      if (name === "Blank") {
+        html = '<div class="n8x-pv-blank"><span class="n8x-pv-plus">+</span><span class="n8x-pv-blank-label">Blank sheet</span></div>';
+      } else {
+        var maxCols = Math.min(t.h.length, 3);
+        html = '<table class="n8x-pv-table"><thead><tr>' +
+          t.h.slice(0, maxCols).map(function (h) { return '<th style="background:' + cat.color + '26;color:' + cat.color + '">' + esc(h) + "</th>"; }).join("") +
+          "</tr></thead><tbody>";
+        for (var r = 0; r < 3; r++) {
+          html += "<tr>";
+          for (var c = 0; c < maxCols; c++) {
+            var v = (t.r[r] && t.r[r][c]) || "";
+            var cls = "";
+            var disp;
+            if (v === "") { disp = '<span class="n8x-pv-dash" style="width:' + (26 + (hash(name + r + ":" + c) % 34)) + '%"></span>'; }
+            else if (("" + v).charAt(0) === "=") { disp = '<span class="n8x-pv-fx">ƒx</span>'; cls = "n8x-pv-num"; }
+            else { disp = esc(v); if (!isNaN(parseFloat(v)) && isFinite(v)) cls = "n8x-pv-num"; }
+            html += '<td class="' + cls + '">' + disp + "</td>";
+          }
+          html += "</tr>";
+        }
+        html += "</tbody></table>";
+      }
+      html += '<div class="n8x-pv-foot">' + (name === "Blank" ? "Start from scratch" : t.cols + " cols · " + t.rows + " rows" + (t.fx ? " · ƒx " + t.fx : "")) + "</div>";
+      prev.innerHTML = html;
+      prev.title = name + (t.h.length ? " — Columns: " + t.h.join(", ") : "");
+      // meta line under the title
+      if (!card.querySelector(".n8x-card-meta")) {
+        var meta = document.createElement("div");
+        meta.className = "n8x-card-meta";
+        meta.textContent = name === "Blank" ? "Blank" : cat.name + " · " + t.cols + " cols · " + t.rows + " rows";
+        titleEl.after(meta);
+      }
+      done++;
+    });
+    // Search: the start-screen search box was decorative — wire it up.
+    var search = document.querySelector(".ss-search");
+    if (search && !search.dataset.n8xWired) {
+      search.dataset.n8xWired = "1";
+      search.setAttribute("placeholder", "Search " + cards.length + " templates…");
+      search.addEventListener("input", function () {
+        var q = search.value.trim().toLowerCase(); var visible = 0;
+        cards.forEach(function (card) {
+          var name = (card.querySelector(".ss-card-title") || {}).innerText || "";
+          var cat = card.getAttribute("data-n8x-cat") || "";
+          var show = !q || name.toLowerCase().indexOf(q) >= 0 || cat.toLowerCase().indexOf(q) >= 0;
+          card.style.display = show ? "" : "none"; if (show) visible++;
+        });
+        var note = document.getElementById("n8xSearchNote");
+        if (!note) {
+          note = document.createElement("div"); note.id = "n8xSearchNote";
+          note.style.cssText = "color:var(--text-muted);font-size:13px;margin:6px 0 14px;display:none";
+          var gal = document.querySelector(".ss-gallery"); gal && gal.parentNode.insertBefore(note, gal);
+        }
+        note.style.display = visible ? "none" : "block";
+        note.textContent = "No templates match “" + search.value.trim() + "”.";
+      });
+    }
+    return done > 0;
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { setTimeout(buildPreviews, 60); });
+  else setTimeout(buildPreviews, 60);
+  window.N8X_buildPreviews = buildPreviews;
+})();
+</script>
 <script id="n8x_js">
 /* ===== N8Sheetz Upgrade v2 (N8X) — selection fix + menus/tools overhaul + 40 enhancements =====
    Compatibility: does NOT change localStorage keys or workbook JSON shape.

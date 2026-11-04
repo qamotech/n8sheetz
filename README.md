@@ -1,8 +1,14 @@
 # 📊 N8Sheetz
 
+**▶️ Live: https://qamotech.github.io/n8sheetz/**
+
 A single-file, offline-capable spreadsheet app — dark, high-contrast, virtualized grid (26 columns × 1,000 rows), formulas, charts, snapshots, and a command palette. No build step, no dependencies: open `N8Sheetz.html` in any browser.
 
 **Data:** saves automatically to the browser's `localStorage` (`n8sheetz_state`). Use **File → Save As (.json)** for a portable workbook backup; **File → Open (CSV)** and **Import Workbook (.json)** bring data back in.
+
+## v2.1 (Nov 3, 2026)
+
+- 🖼️ **Preset previews upgraded** — all 75 start-screen template cards now show a true miniature of the template inside (real headers + real first rows, category color, column/row/formula counts, dark theme) instead of the old generic random-dash grid; the template search box actually filters now.
 
 ## v2 upgrade (Nov 3, 2026)
 
