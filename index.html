@@ -17756,6 +17756,17 @@ body.n8x-range-on #n8xBar [data-n8x-act="range"]{background:#b45309!important;co
 .top-bar{animation:n8xBoot .3s ease both}
 @keyframes n8xBoot{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 #saveIndicator{display:none!important}
+/* v2.5 — usage ranking: section heads, pinned cards, archived vault */
+.n8x-sec-head{flex:0 0 100%;font-size:17px;font-weight:800;color:#e2e8f0;margin:10px 0 2px;letter-spacing:.2px}
+.n8x-sec-note{font-size:12px;font-weight:500;color:var(--text-muted,#94a3b8);margin-left:6px}
+.ss-card.n8x-pinned{outline:2px solid #f5c451;outline-offset:3px;border-radius:14px;background:rgba(245,196,81,.05)}
+.n8x-pin-badge{display:inline-block;font-size:11px;font-weight:700;color:#0b1220;background:linear-gradient(90deg,#f5c451,#fbbf24);border-radius:999px;padding:2px 9px;margin-bottom:6px}
+.n8x-archive-toggle{flex:0 0 100%;text-align:left;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px}
+.n8x-archive-toggle:hover{border-color:var(--accent,#38bdf8)}
+#n8xArchivedWrap{display:none;flex:0 0 100%;flex-wrap:wrap;gap:20px;margin-top:14px}
+#n8xArchivedWrap.open{display:flex}
+.ss-card.n8x-archived-card{opacity:.72}
+.ss-card.n8x-archived-card:hover{opacity:1}
 
 </style>
 <script id="n8x_tpl">
@@ -19321,12 +19332,170 @@ window.N8X_TPL = {"Blank":{"h":[],"r":[],"cols":0,"rows":0,"fx":0},"Annual Budge
     addMenuItem("toolsMenu", "🔍 Cell Inspector", cmdInspector, "Inspect");
     addMenuItem("toolsMenu", "⌨️ Keyboard Shortcuts", cmdShortcuts, "Inspect");
     if (ui.gridlines === false) document.body.classList.add("n8x-nogrid");
-    window.N8X.version = "2.4.1";
+    window.N8X.version = "2.5.0";
     window.N8X._v23 = { logoSVG: logoSVG, ui: ui };
     return true;
   }
   var tries = 0;
   var timer = setInterval(function () { tries++; if (install() || tries > 100) clearInterval(timer); }, 250);
+})();
+
+</script>
+<script id="n8x_js4">
+/* ===== N8Sheetz v2.5 — preset library round 2: usage-based ranking =====
+   Lightweight local usage counting (localStorage 'n8sheetz_usage_v1').
+   Top 5 most-used templates pin to the top of the start gallery; the 8
+   least-aligned templates move to an Archived section (NOT deleted —
+   still in TEMPLATE_DATA, still openable, still searchable).
+   Until real opens accumulate, the pinned 5 are seeded by judgment and
+   are clearly badged "seeded pick". Store/workbook format untouched. */
+(function () {
+  "use strict";
+  var KEY = "n8sheetz_usage_v1";
+  var SEED = ["Inventory Management", "Invoice", "Client Billing", "Mileage Tracker", "Annual Budget"];
+  var ARCHIVE = ["API Documentation", "Network Inventory", "Book List", "Recipe Book", "Gift Tracker", "Diet Planner", "Feature Roadmap", "Flashcards"];
+  var SEED_UNTIL = 10; // real opens needed before the "seeded" label retires
+
+  var data = { counts: {}, last: {}, realTotal: 0 };
+  try { var raw = JSON.parse(localStorage.getItem(KEY) || "null"); if (raw && raw.counts) data = raw; } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) {} }
+  function track(name) {
+    if (!name || name === "Blank") return;
+    data.counts[name] = (data.counts[name] || 0) + 1;
+    data.last[name] = Date.now();
+    data.realTotal = (data.realTotal || 0) + 1;
+    save();
+  }
+
+  /* count every template open at the single choke point */
+  if (typeof window.openSpreadsheet === "function" && !window.openSpreadsheet._n8x4) {
+    var orig = window.openSpreadsheet;
+    var wrapped = function (name) { track(name); return orig.apply(this, arguments); };
+    wrapped._n8x4 = true;
+    window.openSpreadsheet = wrapped;
+  }
+
+  function cardName(card) {
+    var t = card.querySelector(".ss-card-title");
+    return t ? t.innerText.trim() : "";
+  }
+
+  var userOpenedArchive = false;
+
+  function rankGallery() {
+    var gal = document.querySelector(".ss-gallery");
+    if (!gal || gal.dataset.n8xRanked) return false;
+    var cards = Array.prototype.slice.call(gal.querySelectorAll(".ss-card"));
+    if (cards.length < 40) return false;
+    if (!cards[0].querySelector(".n8x-card-meta")) return false; // previews first
+    gal.dataset.n8xRanked = "1";
+
+    var origOrder = {};
+    cards.forEach(function (c, i) { origOrder[cardName(c)] = i; });
+    function count(n) { return data.counts[n] || 0; }
+    function seedIdx(n) { var i = SEED.indexOf(n); return i < 0 ? 99 : i; }
+
+    var archived = [], eligible = [], blank = null;
+    cards.forEach(function (c) {
+      var n = cardName(c);
+      if (n === "Blank") blank = c;
+      else if (ARCHIVE.indexOf(n) >= 0) archived.push(c);
+      else eligible.push(c);
+    });
+    eligible.sort(function (a, b) {
+      var na = cardName(a), nb = cardName(b);
+      return (count(nb) - count(na)) || (seedIdx(na) - seedIdx(nb)) || (origOrder[na] - origOrder[nb]);
+    });
+    var pinned = eligible.slice(0, 5);
+    var rest = eligible.slice(5);
+    var seededMode = (data.realTotal || 0) < SEED_UNTIL;
+
+    function head(txt, note) {
+      var h = document.createElement("div");
+      h.className = "n8x-sec-head";
+      h.innerHTML = txt + (note ? ' <span class="n8x-sec-note">' + note + "</span>" : "");
+      return h;
+    }
+
+    var frag = document.createDocumentFragment();
+    frag.appendChild(head("📌 Most Used", seededMode
+      ? "seeded picks until your opens take over · " + (data.realTotal || 0) + " real open" + ((data.realTotal || 0) === 1 ? "" : "s") + " so far"
+      : "ranked by your opens · " + (data.realTotal || 0) + " total"));
+    pinned.forEach(function (c) {
+      var n = cardName(c), cnt = count(n);
+      c.classList.add("n8x-pinned");
+      if (!c.querySelector(".n8x-pin-badge")) {
+        var b = document.createElement("div");
+        b.className = "n8x-pin-badge";
+        b.textContent = cnt > 0 ? "📌 Top 5 · opened ×" + cnt : "📌 Top 5 · seeded pick";
+        var prev = c.querySelector(".ss-card-preview");
+        if (prev && prev.parentNode) prev.parentNode.insertBefore(b, prev);
+        else c.insertBefore(b, c.firstChild);
+      }
+      frag.appendChild(c);
+    });
+
+    frag.appendChild(head("📚 All Templates", "sorted by your opens"));
+    if (blank) frag.appendChild(blank);
+    rest.forEach(function (c) {
+      var n = cardName(c), cnt = count(n);
+      if (cnt > 0) {
+        var meta = c.querySelector(".n8x-card-meta");
+        if (meta && meta.textContent.indexOf("opened ×") < 0) meta.textContent += " · opened ×" + cnt;
+      }
+      frag.appendChild(c);
+    });
+
+    /* archived: collapsed section, templates intact */
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.id = "n8xArchiveToggle";
+    toggle.className = "n8x-archive-toggle";
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.textContent = "🗄️ Archived (" + archived.length + ") — tap to show";
+    var wrap = document.createElement("div");
+    wrap.id = "n8xArchivedWrap";
+    archived.sort(function (a, b) { return cardName(a).localeCompare(cardName(b)); });
+    archived.forEach(function (c) { c.classList.add("n8x-archived-card"); wrap.appendChild(c); });
+    function setWrap(open) {
+      wrap.classList.toggle("open", open);
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = "🗄️ Archived (" + archived.length + ") — tap to " + (open ? "hide" : "show");
+    }
+    toggle.addEventListener("click", function () { userOpenedArchive = !userOpenedArchive; setWrap(userOpenedArchive); });
+    frag.appendChild(toggle);
+    frag.appendChild(wrap);
+
+    gal.appendChild(frag);
+
+    /* search: surface archived matches instead of hiding them in the vault */
+    var search = document.querySelector(".ss-search");
+    if (search && !search.dataset.n8x4Wired) {
+      search.dataset.n8x4Wired = "1";
+      search.addEventListener("input", function () {
+        var q = search.value.trim().toLowerCase();
+        if (!q) { setWrap(userOpenedArchive); return; }
+        var anyMatch = archived.some(function (c) {
+          var n = cardName(c).toLowerCase();
+          var cat = (c.getAttribute("data-n8x-cat") || "").toLowerCase();
+          return n.indexOf(q) >= 0 || cat.indexOf(q) >= 0;
+        });
+        setWrap(anyMatch);
+      });
+    }
+    return true;
+  }
+
+  window.N8X_USAGE = { data: data, track: track, SEED: SEED, ARCHIVE: ARCHIVE, rerank: rankGallery, KEY: KEY };
+
+  var tries = 0;
+  var timer = setInterval(function () {
+    tries++;
+    if (rankGallery()) {
+      if (window.N8X) window.N8X.version = "2.5.0";
+      clearInterval(timer);
+    } else if (tries > 120) clearInterval(timer);
+  }, 150);
 })();
 
 </script>

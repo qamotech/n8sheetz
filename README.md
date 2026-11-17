@@ -6,6 +6,14 @@ A single-file, offline-capable spreadsheet app — dark, high-contrast, virtuali
 
 **Data:** saves automatically to the browser's `localStorage` (`n8sheetz_state`). Use **File → Save As (.json)** for a portable workbook backup; **File → Open (CSV)** and **Import Workbook (.json)** bring data back in.
 
+## v2.5.0 (Nov 17, 2026) — preset library round 2: usage-based ranking
+
+- 📊 **Real usage counting.** Every template open is counted locally (`localStorage n8sheetz_usage_v1` — counts + last-opened, nothing leaves the device, workbook format untouched).
+- 📌 **Top 5 pinned.** The 5 most-used templates pin to a gold-outlined "Most Used" row at the top of the gallery, badged with their open counts; the rest sort by opens too.
+- 🌱 **Honest seeding.** No usage existed yet, so the first Top 5 are seeded by judgment — Inventory Management (Arc), Invoice + Client Billing (Clark Family Projects), Mileage Tracker (taxes), Annual Budget (family) — each badged "seeded pick", with the section header showing the real-open count. After 10 real opens the seeded label retires and ranking is purely yours.
+- 🗄️ **Archived, not deleted.** 8 dead-weight templates (API Documentation, Network Inventory, Book List, Recipe Book, Gift Tracker, Diet Planner, Feature Roadmap, Flashcards) moved into a collapsed Archived section — still openable, still counted, and search surfaces them when a query matches.
+- ✅ 128+ checks: new test_v25.py 22/22 plus all prior suites (36 + 12 + 8 + band + 26 + 24 + compat) run individually, zero errors.
+
 ## v2.4.1 (Nov 4, 2026)
 
 - 🐛 **Crosshair band fix.** The v2.3 crosshair guides painted from a secondary render path, so after tapping around they stayed frozen on an old column while the selection moved on (Nathan's screenshot: selection on C5, band stuck on column D). Bands now paint from the single fast-render hook every selection paint uses — they track the active cell on every tap, drag, scroll and edit. Regression test added (tap D7 → tap C5, band must follow both).
